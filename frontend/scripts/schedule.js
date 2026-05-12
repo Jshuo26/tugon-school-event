@@ -56,7 +56,7 @@ function renderRows(events) {
                         <div style="font-size:0.72rem;color:#fca5a5;margin-top:0.3rem;line-height:1.3;">This event is already at full capacity.</div>`;
         } else if (e.registered) {
             statusCell = `<span class="status-dot" style="${full ? 'background:#ef4444;' : ''}"></span> ${full ? 'Full' : 'Open'}`;
-            actionCell = `<button class="btn-register register-btn" data-id="${e.id}" data-registered="1" style="opacity:.7;">✅ Done</button>`;
+            actionCell = `<button class="btn-register register-btn" data-id="${e.id}" data-registered="1" style="opacity:.7;">Registered — Click to Unregister</button>`;
         } else {
             statusCell = `<span class="status-dot"></span> Open`;
             actionCell = `<button class="btn-register register-btn" data-id="${e.id}" data-registered="0">Register</button>`;
@@ -87,12 +87,12 @@ function renderRows(events) {
                         loadSchedule(true);
                     } else {
                         alert(data.error || 'Failed to unregister.');
-                        this.textContent = '✅ Done';
+                        this.textContent = 'Registered — Click to Unregister';
                         this.disabled    = false;
                     }
                 } catch {
                     alert('Server unreachable.');
-                    this.textContent = '✅ Done';
+                    this.textContent = 'Registered — Click to Unregister';
                     this.disabled    = false;
                 }
                 return;
@@ -103,7 +103,7 @@ function renderRows(events) {
                 const res  = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'POST' });
                 const data = await res.json();
                 if (res.ok) {
-                    this.textContent = '✅ Done';
+                    this.textContent = 'Registered — Click to Unregister';
                     this.dataset.registered = '1';
                     this.style.opacity = '0.7';
                     this.classList.remove('register-btn');
