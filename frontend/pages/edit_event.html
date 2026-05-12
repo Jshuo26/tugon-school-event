@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Event — TUGON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/admin_dashboard.css" />
+  <link rel="stylesheet" href="../styles/shared_form.css" />
+</head>
+<body>
+  
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+  <label for="sidebar-toggle" class="sidebar-overlay"></label>
+  <label for="sidebar-toggle" class="sidebar-hamburger" aria-label="Toggle Menu">
+    <span></span><span></span><span></span>
+  </label>
+
+  
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/icons/icon.png" alt="Icon" />
+      <span>TUGON</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="admin_dashboard.html" class="nav-link active">
+          <span class="icon">📅</span>
+          <span>Events</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="add_event.html" class="nav-link">
+          <span class="icon">➕</span>
+          <span>Add Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="registrations.html" class="nav-link">
+          <span class="icon">👥</span>
+          <span>Registrations</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <a href="login.html" class="nav-link">
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  
+  <main class="main-content">
+    <header class="header-section">
+      <div class="header-text">
+        <h1>Edit Event</h1>
+        <p>Update the event details below. Pinning is managed from the Events dashboard.</p>
+      </div>
+
+      <div class="user-profile">
+        <span>Admin Portal</span>
+        <div
+          style="width: 32px; height: 32px; background: var(--teal-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
+          A</div>
+      </div>
+    </header>
+
+    <div class="form-container">
+      <form class="admin-form" id="edit-event-form" novalidate>
+
+        
+        <div class="form-left">
+          <div class="form-section">
+            <div class="section-header">
+              <span class="icon">📝</span>
+              <h2>General & Schedule</h2>
+            </div>
+            <div class="form-group">
+              <label for="event-title">Event Title *</label>
+              <input type="text" id="event-title" placeholder="e.g. Science Fair 2025" required />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="event-date">Date *</label>
+                <input type="date" id="event-date" required />
+              </div>
+              <div class="form-group">
+                <label>Time Range *</label>
+                <div class="time-range">
+                  <input type="time" id="start-time" required />
+                  <span>to</span>
+                  <input type="time" id="end-time" required />
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label for="event-location">Venue / Location *</label>
+              <select id="event-location" required>
+                <option value="" disabled>Select where it will happen...</option>
+                <option value="Auditorium">Auditorium</option>
+                <option value="Gymnasium">Gymnasium</option>
+                <option value="Facade">Facade</option>
+                <option value="Multi-purpose Hall">Multi-purpose Hall</option>
+                <option value="School Field">School Field</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label for="event-image">Event Banner Image <span style="font-weight:400;opacity:0.7;">(optional – leave blank to keep existing)</span></label>
+              <input type="file" id="event-image" name="event_image" accept="image/jpeg,image/png,image/webp,image/gif"
+                style="width:100%;padding:0.5rem 0.85rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:#0f1923;color:rgba(255,255,255,0.8);font-size:0.9rem;cursor:pointer;" />
+              <p id="current-image-note" style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin:0.3rem 0 0;"></p>
+            </div>
+
+        
+        <div class="form-right">
+          <div class="form-section" style="height: 100%; display: flex; flex-direction: column; min-height: 480px;">
+            <div class="section-header">
+              <span class="icon">⚙️</span>
+              <h2>Description & Logistics</h2>
+            </div>
+
+            <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; margin-bottom: 1.5rem;">
+              <label for="event-description">Description *</label>
+              <textarea id="event-description" placeholder="Describe the event goals and activities..." required
+                style="flex-grow: 1; min-height: 120px;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+              <div class="form-group">
+                <label for="event-category">Category *</label>
+                <select id="event-category" required>
+                  <option value="" disabled>Select category...</option>
+                  <option value="Academic">Academic</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Social">Social</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="event-capacity">Capacity (Max 300) *</label>
+                <input type="number" id="event-capacity" min="1" max="300" placeholder="Max 300" required />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="targeting-section">
+          <div class="form-section">
+            <div class="section-header">
+              <span class="icon">🎯</span>
+              <h2>Target Audience</h2>
+            </div>
+
+            <div class="form-group">
+              <label>Target Colleges * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
+              <div class="checkbox-grid-pills" id="college-pill-group">
+                <label class="pill-checkbox" id="college-all-label">
+                  <input type="checkbox" name="target_colleges" value="All" class="college-check" id="college-all" />
+                  <span>🏛️ All Colleges</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Arts and Science" class="college-check" />
+                  <span>Arts and Science</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Business and Accountancy" class="college-check" />
+                  <span>Business &amp; Accountancy</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Computer Studies" class="college-check" />
+                  <span>Computer Studies</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Education" class="college-check" />
+                  <span>Education</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Engineering" class="college-check" />
+                  <span>Engineering</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Hospitality Management" class="college-check" />
+                  <span>Hospitality Management</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_colleges" value="Nursing" class="college-check" />
+                  <span>Nursing</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.8rem;">
+              <label>Target Year Levels * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
+              <div class="checkbox-grid-pills" id="year-pill-group">
+                <label class="pill-checkbox" id="year-all-label">
+                  <input type="checkbox" name="target_years" value="All" class="year-check" id="year-all" />
+                  <span>🌟 All Years</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_years" value="1st Year" class="year-check" />
+                  <span>1st Year</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_years" value="2nd Year" class="year-check" />
+                  <span>2nd Year</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_years" value="3rd Year" class="year-check" />
+                  <span>3rd Year</span>
+                </label>
+                <label class="pill-checkbox">
+                  <input type="checkbox" name="target_years" value="4th Year" class="year-check" />
+                  <span>4th Year</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-publish-container">
+          <a href="admin_dashboard.html" class="btn btn-dash" style="text-decoration:none;margin-right:1rem;">← Cancel</a>
+          <button type="submit" class="btn btn-dash btn-publish">Save Changes →</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <script src="../scripts/edit_event.js"></script>
+</body>
+</html>

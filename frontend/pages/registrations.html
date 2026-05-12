@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Registrations — TUGON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/admin_dashboard.css" />
+</head>
+<body>
+
+  
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+  <label for="sidebar-toggle" class="sidebar-overlay"></label>
+  <label for="sidebar-toggle" class="sidebar-hamburger" aria-label="Toggle Menu">
+    <span></span><span></span><span></span>
+  </label>
+
+  
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/icons/icon.png" alt="Icon" />
+      <span>TUGON</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="admin_dashboard.html" class="nav-link">
+          <span class="icon">📅</span>
+          <span>Events</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="add_event.html" class="nav-link">
+          <span class="icon">➕</span>
+          <span>Add Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="registrations.html" class="nav-link active">
+          <span class="icon">👥</span>
+          <span>Registrations</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <a href="login.html" class="nav-link">
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  
+  <main class="main-content">
+    <header class="header-section">
+      <div class="header-text">
+        <h1>Event Registrations</h1>
+        <p>Select an event to view the list of registered participants.</p>
+      </div>
+      
+      <div class="user-profile">
+        <span>Admin Portal</span>
+        <div style="width: 32px; height: 32px; background: var(--teal-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">A</div>
+      </div>
+    </header>
+
+    <div class="reg-container">
+      <div class="form-section">
+        <div class="section-header">
+          <span class="icon">🎯</span>
+          <h2>Registrations by Event</h2>
+        </div>
+        
+        <div class="event-selector" id="event-selector">
+          <p style="color:rgba(255,255,255,0.45);font-size:0.9rem;">Loading events…</p>
+        </div>
+
+        <div id="participants-container">
+          <div class="no-selection-msg"><p>Select an event above to view participants.</p></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="../scripts/registrations.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — TUGON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/admin_dashboard.css" />
+</head>
+<body>
+
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
+  <label for="sidebar-toggle" class="sidebar-overlay"></label>
+  <label for="sidebar-toggle" class="sidebar-hamburger" aria-label="Toggle Menu">
+    <span></span><span></span><span></span>
+  </label>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../assets/icons/icon.png" alt="Icon" />
+      <span>TUGON</span>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item">
+        <a href="admin_dashboard.html" class="nav-link active">
+          <span class="icon">📅</span>
+          <span>Events</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="add_event.html" class="nav-link">
+          <span class="icon">➕</span>
+          <span>Add Event</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="registrations.html" class="nav-link">
+          <span class="icon">👥</span>
+          <span>Registrations</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <a href="login.html" class="nav-link">
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="header-section">
+      <div class="header-text">
+        <h1>Manage & Pin Events</h1>
+        <p>Only one event can be pinned as Featured at a time. All-college events are visible to everyone; college-specific events are visible only to that college's students.</p>
+      </div>
+
+      <div class="user-profile">
+        <span>Admin Portal</span>
+        <div
+          style="width: 32px; height: 32px; background: var(--teal-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
+          A</div>
+      </div>
+    </header>
+
+    <div class="events-grid" id="events-grid">
+      <p id="events-loading" style="color:rgba(255,255,255,0.5);padding:2rem;">Loading events…</p>
+    </div>
+  </main>
+  <script src="../scripts/admin_dashboard.js"></script>
+</body>
+</html>
