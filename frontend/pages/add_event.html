@@ -61,7 +61,7 @@
         <div class="form-left">
           <div class="form-section">
             <div class="section-header">
-              <h2>General & Schedule</h2>
+              <h2>General &amp; Schedule</h2>
             </div>
             <div class="form-group">
               <label for="event-title">Event Title *</label>
@@ -81,7 +81,7 @@
                 </div>
               </div>
             </div>
-            <div class="form-group" style="margin-top: 0.5rem;">
+            <div class="form-group form-group--mt">
               <label for="event-location">Venue / Location *</label>
               <select id="event-location" required>
                 <option value="" disabled selected>Select where it will happen...</option>
@@ -92,25 +92,23 @@
                 <option value="School Field">School Field</option>
               </select>
             </div>
-            <div class="form-group" style="margin-top: 0.5rem;">
-              <label for="event-image">Event Banner Image <span style="font-weight:400;opacity:0.7;">(optional, jpg/png/webp, max 5MB)</span></label>
-              <input type="file" id="event-image" name="event_image" accept="image/jpeg,image/png,image/webp,image/gif"
-                style="width:100%;padding:0.5rem 0.85rem;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:#0f1923;color:rgba(255,255,255,0.8);font-size:0.9rem;cursor:pointer;" />
+            <div class="form-group form-group--mt">
+              <label for="event-image">Event Banner Image <span class="label-note">(optional, jpg/png/webp, max 5MB)</span></label>
+              <input type="file" id="event-image" name="event_image" accept="image/jpeg,image/png,image/webp,image/gif" class="input-file" />
             </div>
           </div>
         </div>
 
         <div class="form-right">
-          <div class="form-section" style="height: 100%; display: flex; flex-direction: column; min-height: 480px;">
+          <div class="form-section form-section--full">
             <div class="section-header">
-              <h2>Description & Logistics</h2>
+              <h2>Description &amp; Logistics</h2>
             </div>
-            <div class="form-group" style="flex-grow: 1; display: flex; flex-direction: column; margin-bottom: 1.5rem;">
+            <div class="form-group form-group--grow">
               <label for="event-description">Description *</label>
-              <textarea id="event-description" placeholder="Describe the event goals and activities..." required
-                style="flex-grow: 1; min-height: 120px;"></textarea>
+              <textarea id="event-description" placeholder="Describe the event goals and activities..." required></textarea>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-row-2col">
               <div class="form-group">
                 <label for="event-category">Category *</label>
                 <select id="event-category" required>
@@ -136,7 +134,7 @@
               <h2>Target Audience</h2>
             </div>
             <div class="form-group">
-              <label>Target Colleges * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
+              <label>Target Colleges * <span class="label-note-dim">(check all that apply)</span></label>
               <div class="checkbox-grid-pills" id="college-pill-group">
                 <label class="pill-checkbox" id="college-all-label">
                   <input type="checkbox" name="target_colleges" value="All" class="college-check" id="college-all" />
@@ -172,8 +170,8 @@
                 </label>
               </div>
             </div>
-            <div class="form-group" style="margin-top: 1.8rem;">
-              <label>Target Year Levels * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
+            <div class="form-group form-group--mt-lg">
+              <label>Target Year Levels * <span class="label-note-dim">(check all that apply)</span></label>
               <div class="checkbox-grid-pills" id="year-pill-group">
                 <label class="pill-checkbox" id="year-all-label">
                   <input type="checkbox" name="target_years" value="All" class="year-check" id="year-all" />
@@ -209,6 +207,5 @@
   </main>
 
   <script src="../scripts/add_event.js"></script>
-  
 </body>
 </html>
