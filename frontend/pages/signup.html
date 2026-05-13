@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign-Up — TUGON</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../styles/login.css" />
 </head>
 <body>
+
   <nav class="navbar">
     <div class="nav-left">
       <img src="../assets/icons/icon.png" alt="Icon" class="nav-icon" />
@@ -24,18 +22,15 @@
   <main class="page-content">
     <div class="login-page">
 
-      
       <div class="login-visual page-fade">
         <div class="hero-glow"></div>
-        <img src="../assets/icons/tugon_logo.png" alt="TUGON Logo" class="login-visual-logo"
-          style="height:140px;margin-bottom:2rem;" />
-        <h1 style="color:white;font-family:var(--font-body);font-weight:700;font-size:1.8rem;margin-bottom:1rem;position:relative;z-index:2;">Join the Event</h1>
-        <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;max-width:320px;text-align:center;position:relative;z-index:2;">
+        <img src="../assets/icons/tugon_logo.png" alt="TUGON Logo" class="login-visual-logo" />
+        <h1 class="visual-heading">Join the Event</h1>
+        <p class="visual-subtext">
           Sign-up now to secure your spot and be part of an unforgettable campus experience.
         </p>
       </div>
 
-      
       <div class="login-form-wrap">
         <div class="form-card page-fade">
           <h2>Sign-Up</h2>
@@ -69,7 +64,6 @@
               <input type="text" id="signup-studentid" name="student_id" placeholder="e.g. 24-12345" required inputmode="numeric" />
             </div>
 
-            
             <div class="form-row">
               <div class="form-group">
                 <label for="signup-college">COLLEGE *</label>
@@ -96,9 +90,8 @@
               </div>
             </div>
 
-            
             <div class="form-row cascade-row" id="course-row">
-              <div class="form-group" style="grid-column:1/-1;">
+              <div class="form-group form-group-full">
                 <label for="signup-course">COURSE *</label>
                 <select id="signup-course" name="course">
                   <option value="">-- Select Course --</option>
@@ -106,9 +99,8 @@
               </div>
             </div>
 
-            
             <div class="form-row cascade-row" id="major-row">
-              <div class="form-group" style="grid-column:1/-1;">
+              <div class="form-group form-group-full">
                 <label for="signup-major">MAJOR *</label>
                 <select id="signup-major" name="major">
                   <option value="">-- Select Major --</option>
@@ -119,7 +111,7 @@
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="margin-top:1rem;">Sign Up &rarr;</button>
+            <button type="submit" class="btn btn-primary btn-submit">Sign Up &rarr;</button>
           </form>
 
           <div class="create-account">
@@ -131,9 +123,11 @@
     </div>
   </main>
 
-  <footer style="background:var(--black);color:rgba(255,255,255,0.3);padding:2rem;text-align:center;font-size:0.8rem;border-top:1px solid rgba(0,122,122,0.12);">
+  <footer class="site-footer">
     &copy; 2026 TUGON School Event System
   </footer>
+
   <script src="../scripts/signup.js"></script>
+  
 </body>
 </html>
