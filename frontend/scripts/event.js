@@ -1,22 +1,22 @@
 const catColors = {
-    Academic: 'linear-gradient(135deg,#0a3d18,#1a7a2e)',
-    Cultural:  'linear-gradient(135deg,#7c2b8b,#be185d)',
-    Sports:    'linear-gradient(135deg,#164e63,#0891b2)',
-    Social:    'linear-gradient(135deg,#78350f,#d97706)',
-    Tech:      'linear-gradient(135deg,#312e81,#4f46e5)',
-    Others:    'linear-gradient(135deg,#1f2937,#374151)',
+    Academic: 'cat-academic',
+    Cultural:  'cat-cultural',
+    Sports:    'cat-sports',
+    Social:    'cat-social',
+    Tech:      'cat-tech',
+    Others:    'cat-others',
 };
 
 function buildFeaturedSlide(e) {
     const dateStr = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '';
     const timeStr = [e.start_time, e.end_time].filter(Boolean).join(' – ');
     const full    = e.capacity && (e.registration_count || 0) >= e.capacity;
-    let btnLabel, btnStyle = '';
+    let btnLabel, btnClass = '';
     if (e.registered) {
         btnLabel = 'Registered Click to Unregister';
     } else if (full) {
         btnLabel  = 'Full';
-        btnStyle  = 'opacity:.55;cursor:not-allowed;background:rgba(239,68,68,0.2);color:#fca5a5;border-color:rgba(239,68,68,0.4);';
+        btnClass  = 'btn-full-disabled';
     } else {
         btnLabel = 'Register Now';
     }
@@ -30,9 +30,8 @@ function buildFeaturedSlide(e) {
         ${e.location ? `<span class="meta-chip">📍 ${e.location}</span>` : ''}
         ${e.category ? `<span class="meta-chip">🎓 ${e.category}</span>` : ''}
         ${e.capacity ? `<span class="meta-chip">👥 ${e.registration_count||0}/${e.capacity} Seats</span>` : ''}
-        <button class="btn btn-primary btn-sm register-btn"
-        data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}" ${full && !e.registered ? 'disabled' : ''}
-        style="${btnStyle}">
+        <button class="btn btn-primary btn-sm register-btn ${btnClass}"
+        data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}" ${full && !e.registered ? 'disabled' : ''}>
         ${btnLabel}
         </button>
     </div>`;
@@ -45,7 +44,7 @@ async function loadFeatured() {
         const res    = await apiFetch('/api/events/featured');
         const events = await res.json();
         if (!res.ok || !events.length) {
-            container.innerHTML = '<p class="section-label" style="opacity:.5;">No featured event for your college or year level.</p>';
+            container.innerHTML = '<p class="section-label featured-empty">No featured event for your college or year level.</p>';
             return;
         }
         const featured = events[0];
@@ -59,27 +58,23 @@ async function loadFeatured() {
 async function loadAllEvents() {
     const grid = document.getElementById('events-grid');
     if (!grid) return;
-    grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);padding:2rem;">Loading events…</p>';
+    grid.innerHTML = '<p class="events-loading">Loading events…</p>';
     try {
         const res    = await apiFetch('/api/events');
         const events = await res.json();
-        if (!res.ok) { grid.innerHTML = '<p style="color:#fca5a5;">Failed to load events.</p>'; return; }
-        if (!events.length) { grid.innerHTML = '<p style="color:rgba(255,255,255,0.5);padding:2rem;">No events available for your college/year level yet.</p>'; return; }
+        if (!res.ok) { grid.innerHTML = '<p class="events-error">Failed to load events.</p>'; return; }
+        if (!events.length) { grid.innerHTML = '<p class="events-empty">No events available for your college/year level yet.</p>'; return; }
 
         grid.innerHTML = events.map(e => {
-            const bg   = catColors[e.category] || catColors.Others;
-            const cardImgStyle = e.image_url
-                ? `background:${bg};background-image:url('${e.image_url}');background-size:cover;background-position:center;`
-                : `background:${bg};`;
+            const catClass = catColors[e.category] || catColors.Others;
+            const cardImgClass = e.image_url ? `card-img ${catClass} card-img-cover` : `card-img ${catClass}`;
+            const cardImgStyle = e.image_url ? `background-image:url('${e.image_url}');` : '';
             const full = e.capacity && (e.registration_count || 0) >= e.capacity;
             let actionHtml;
             if (full && !e.registered) {
                 actionHtml = `
-                <button class="btn btn-secondary btn-sm" disabled
-                style="opacity:.55;cursor:not-allowed;background:rgba(239,68,68,0.2);color:#fca5a5;border-color:rgba(239,68,68,0.4);">
-                Full
-                </button>
-                <a href="schedule.html" class="btn btn-secondary btn-sm" style="margin-left:0.4rem;">Details</a>`;
+                <button class="btn btn-secondary btn-sm btn-full-disabled" disabled>Full</button>
+                <a href="schedule.html" class="btn btn-secondary btn-sm btn-details">Details</a>`;
             } else {
                 const btnLabel = e.registered ? 'Registered Click to Unregister' : 'Register';
                 actionHtml = `
@@ -87,11 +82,11 @@ async function loadAllEvents() {
                 data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}">
                 ${btnLabel}
                 </button>
-                <a href="schedule.html" class="btn btn-secondary btn-sm" style="margin-left:0.4rem;">Details</a>`;
+                <a href="schedule.html" class="btn btn-secondary btn-sm btn-details">Details</a>`;
             }
             return `
             <div class="event-card">
-                <div class="card-img" style="${cardImgStyle}">
+                <div class="${cardImgClass}" ${cardImgStyle ? `style="${cardImgStyle}"` : ''}>
                 <span class="card-badge">${e.category || 'Event'}</span>
                 </div>
                 <div class="card-body">
@@ -110,7 +105,7 @@ async function loadAllEvents() {
             });
         });
     } catch {
-        grid.innerHTML = '<p style="color:#fca5a5;">Server unreachable.</p>';
+        grid.innerHTML = '<p class="events-error">Server unreachable.</p>';
     }
 }
 
@@ -125,7 +120,7 @@ async function handleRegister(id, btn) {
                 btn.textContent        = 'Register Now';
                 btn.dataset.registered = '0';
                 btn.disabled           = false;
-                btn.style              = '';
+                btn.classList.remove('btn-full-disabled');
                 loadFeatured();
                 loadAllEvents();
             } else {
