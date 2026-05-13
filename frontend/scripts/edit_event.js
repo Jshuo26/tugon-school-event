@@ -99,7 +99,6 @@
         const data = await res.json();
         if (!res.ok) { alert(data.error || 'Failed to load event.'); window.location.href = 'admin_dashboard.html'; return; }
 
-        
         document.getElementById('event-title').value       = data.title || '';
         document.getElementById('event-date').value        = data.date ? data.date.split('T')[0] : '';
         document.getElementById('start-time').value        = data.start_time ? data.start_time.slice(0,5) : '';
@@ -107,13 +106,11 @@
         document.getElementById('event-description').value = data.description || '';
         document.getElementById('event-capacity').value    = data.capacity || '';
 
-        
         const imgNote = document.getElementById('current-image-note');
         if (imgNote && data.image_url) {
-        imgNote.textContent = '✅ Current image: ' + data.image_url.split('/').pop();
+        imgNote.textContent = 'Current image: ' + data.image_url.split('/').pop();
         }
 
-        
         const locSel = document.getElementById('event-location');
         if (data.location) {
         for (const opt of locSel.options) {
@@ -121,7 +118,6 @@
         }
         }
 
-        
         const catSel = document.getElementById('event-category');
         if (data.category) {
         for (const opt of catSel.options) {
@@ -129,7 +125,6 @@
         }
         }
 
-        
         const colleges = Array.isArray(data.target_colleges) ? data.target_colleges : [];
         if (colleges.includes('All')) {
         collegeAll.checked = true;
@@ -138,7 +133,6 @@
         }
         updateCollegePillState();
 
-        
         const years = Array.isArray(data.target_years) ? data.target_years : [];
         if (years.includes('All')) {
         yearAll.checked = true;
@@ -153,7 +147,6 @@
     }
     }
 
-    
     const form       = document.getElementById('edit-event-form');
     const publishBtn = form?.querySelector('.btn-publish');
 
@@ -216,7 +209,7 @@
         publishBtn.style.pointerEvents = '';
         return;
         }
-        alert('✅ Event updated successfully! Redirecting to dashboard…');
+        alert('Event updated successfully! Redirecting to dashboard…');
         window.location.href = 'admin_dashboard.html';
     } catch {
         showInlineError('Could not reach the server. Is it running?');

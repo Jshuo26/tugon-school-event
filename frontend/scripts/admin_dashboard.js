@@ -56,16 +56,16 @@ function renderEvents(events) {
             <div class="event-meta">
             <span>📅 ${dateStr}</span>
             ${e.location ? `<span>📍 ${e.location}</span>` : ''}
-            ${e.category ? `<span>🏷️ ${e.category}</span>` : ''}
-            <span>👥 ${seats}${full ? ' <span style="color:#fca5a5;font-size:0.78em;">(Full)</span>' : ''}</span>
+            ${e.category ? `<span> ${e.category}</span>` : ''}
+            <span> ${seats}${full ? ' <span style="color:#fca5a5;font-size:0.78em;">(Full)</span>' : ''}</span>
             </div>
         </div>
         <div class="event-actions">
             ${featured
             ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id})">📌 Unpin</button>`
             : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin as Featured</button>`}
-            <button class="btn-dash btn-edit" onclick="editEvent(${e.id})">✏️ Edit</button>
-            <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, this)">🗑️ Delete</button>
+            <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
+            <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, this)"> Delete</button>
         </div>
         </div>`;
     }).join('');

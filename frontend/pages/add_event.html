@@ -28,19 +28,16 @@
     <ul class="nav-menu">
       <li class="nav-item">
         <a href="admin_dashboard.html" class="nav-link">
-          <span class="icon">📅</span>
           <span>Events</span>
         </a>
       </li>
       <li class="nav-item">
         <a href="add_event.html" class="nav-link active">
-          <span class="icon">➕</span>
           <span>Add Event</span>
         </a>
       </li>
       <li class="nav-item">
         <a href="registrations.html" class="nav-link">
-          <span class="icon">👥</span>
           <span>Registrations</span>
         </a>
       </li>
@@ -62,25 +59,19 @@
 
       <div class="user-profile">
         <span>Admin Portal</span>
-        <div
-          style="width: 32px; height: 32px; background: var(--teal-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
-          A</div>
-      </div>
     </header>
 
     <div class="form-container">
       <form class="admin-form" id="create-event-form" novalidate>
 
-        
         <div class="form-left">
           <div class="form-section">
             <div class="section-header">
-              <span class="icon">📝</span>
               <h2>General & Schedule</h2>
             </div>
             <div class="form-group">
               <label for="event-title">Event Title *</label>
-              <input type="text" id="event-title" placeholder="e.g. Science Fair 2025" required />
+              <input type="text" id="event-title" placeholder="e.g. Science Fair 2026" required />
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -115,11 +106,9 @@
           </div>
         </div>
 
-        
         <div class="form-right">
           <div class="form-section" style="height: 100%; display: flex; flex-direction: column; min-height: 480px;">
             <div class="section-header">
-              <span class="icon">⚙️</span>
               <h2>Description & Logistics</h2>
             </div>
 
@@ -149,21 +138,18 @@
           </div>
         </div>
 
-        
         <div class="targeting-section">
           <div class="form-section">
             <div class="section-header">
-              <span class="icon">🎯</span>
               <h2>Target Audience</h2>
             </div>
 
-            
             <div class="form-group">
               <label>Target Colleges * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
               <div class="checkbox-grid-pills" id="college-pill-group">
                 <label class="pill-checkbox" id="college-all-label">
                   <input type="checkbox" name="target_colleges" value="All" class="college-check" id="college-all" />
-                  <span>🏛️ All Colleges</span>
+                  <span>All Colleges</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Arts and Science" class="college-check" />
@@ -171,7 +157,7 @@
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Business and Accountancy" class="college-check" />
-                  <span>Business &amp; Accountancy</span>
+                  <span>Business and Accountancy</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Computer Studies" class="college-check" />
@@ -196,13 +182,12 @@
               </div>
             </div>
 
-            
             <div class="form-group" style="margin-top: 1.8rem;">
               <label>Target Year Levels * <span style="font-weight: 400; opacity:0.75;">(check all that apply)</span></label>
               <div class="checkbox-grid-pills" id="year-pill-group">
                 <label class="pill-checkbox" id="year-all-label">
                   <input type="checkbox" name="target_years" value="All" class="year-check" id="year-all" />
-                  <span>🌟 All Years</span>
+                  <span>All Years</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_years" value="1st Year" class="year-check" />
@@ -228,6 +213,7 @@
         <div class="btn-publish-container">
           <button type="submit" class="btn btn-dash btn-publish">Publish Event →</button>
         </div>
+
       </form>
     </div>
   </main>

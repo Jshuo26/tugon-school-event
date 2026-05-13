@@ -13,7 +13,7 @@ function buildFeaturedSlide(e) {
     const full    = e.capacity && (e.registration_count || 0) >= e.capacity;
     let btnLabel, btnStyle = '';
     if (e.registered) {
-        btnLabel = 'Registered <br> Click to Unregister';
+        btnLabel = 'Registered Click to Unregister';
     } else if (full) {
         btnLabel  = 'Full';
         btnStyle  = 'opacity:.55;cursor:not-allowed;background:rgba(239,68,68,0.2);color:#fca5a5;border-color:rgba(239,68,68,0.4);';
@@ -81,7 +81,7 @@ async function loadAllEvents() {
                 </button>
                 <a href="schedule.html" class="btn btn-secondary btn-sm" style="margin-left:0.4rem;">Details</a>`;
             } else {
-                const btnLabel = e.registered ? 'Registered <br> Click to Unregister' : 'Register';
+                const btnLabel = e.registered ? 'Registered Click to Unregister' : 'Register';
                 actionHtml = `
                 <button class="btn btn-secondary btn-sm register-btn"
                 data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}">
@@ -131,12 +131,12 @@ async function handleRegister(id, btn) {
             } else {
                 const data = await res.json();
                 alert(data.error || 'Failed to unregister.');
-                btn.textContent = 'Registered <br> Click to Unregister';
+                btn.textContent = 'Registered Click to Unregister';
                 btn.disabled    = false;
             }
         } catch {
             alert('Server unreachable.');
-            btn.textContent = 'Registered <br> Click to Unregister';
+            btn.textContent = 'Registered Click to Unregister';
             btn.disabled    = false;
         }
         return;
@@ -147,11 +147,11 @@ async function handleRegister(id, btn) {
         const res  = await apiFetch(`/api/events/${id}/register`, { method: 'POST' });
         const data = await res.json();
         if (res.ok) {
-            btn.textContent        = 'Registered <br> Click to Unregister';
+            btn.textContent        = 'Registered Click to Unregister';
             btn.dataset.registered = '1';
             btn.disabled           = false;
         } else if (res.status === 409 && data.error && data.error.includes('already registered')) {
-            btn.textContent        = 'Registered <br> Click to Unregister';
+            btn.textContent        = 'Registered Click to Unregister';
             btn.dataset.registered = '1';
             btn.disabled           = false;
         } else {

@@ -13,14 +13,12 @@
   <link rel="stylesheet" href="../styles/shared_form.css" />
 </head>
 <body>
-  
   <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle">
   <label for="sidebar-toggle" class="sidebar-overlay"></label>
   <label for="sidebar-toggle" class="sidebar-hamburger" aria-label="Toggle Menu">
     <span></span><span></span><span></span>
   </label>
 
-  
   <aside class="sidebar">
     <div class="sidebar-logo">
       <img src="../assets/icons/icon.png" alt="Icon" />
@@ -29,21 +27,8 @@
 
     <ul class="nav-menu">
       <li class="nav-item">
-        <a href="admin_dashboard.html" class="nav-link active">
-          <span class="icon">📅</span>
-          <span>Events</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="add_event.html" class="nav-link">
-          <span class="icon">➕</span>
-          <span>Add Event</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="registrations.html" class="nav-link">
-          <span class="icon">👥</span>
-          <span>Registrations</span>
+        <a href="admin_dashboard.html" class="btn btn-dash">
+          <span>← Back</span>
         </a>
       </li>
     </ul>
@@ -55,7 +40,6 @@
     </div>
   </aside>
 
-  
   <main class="main-content">
     <header class="header-section">
       <div class="header-text">
@@ -65,20 +49,15 @@
 
       <div class="user-profile">
         <span>Admin Portal</span>
-        <div
-          style="width: 32px; height: 32px; background: var(--teal-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.8rem;">
-          A</div>
       </div>
     </header>
 
     <div class="form-container">
       <form class="admin-form" id="edit-event-form" novalidate>
 
-        
         <div class="form-left">
           <div class="form-section">
             <div class="section-header">
-              <span class="icon">📝</span>
               <h2>General & Schedule</h2>
             </div>
             <div class="form-group">
@@ -117,11 +96,9 @@
               <p id="current-image-note" style="font-size:0.78rem;color:rgba(255,255,255,0.4);margin:0.3rem 0 0;"></p>
             </div>
 
-        
         <div class="form-right">
           <div class="form-section" style="height: 100%; display: flex; flex-direction: column; min-height: 480px;">
             <div class="section-header">
-              <span class="icon">⚙️</span>
               <h2>Description & Logistics</h2>
             </div>
 
@@ -151,11 +128,9 @@
           </div>
         </div>
 
-        
         <div class="targeting-section">
           <div class="form-section">
             <div class="section-header">
-              <span class="icon">🎯</span>
               <h2>Target Audience</h2>
             </div>
 
@@ -164,7 +139,7 @@
               <div class="checkbox-grid-pills" id="college-pill-group">
                 <label class="pill-checkbox" id="college-all-label">
                   <input type="checkbox" name="target_colleges" value="All" class="college-check" id="college-all" />
-                  <span>🏛️ All Colleges</span>
+                  <span>All Colleges</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Arts and Science" class="college-check" />
@@ -172,7 +147,7 @@
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Business and Accountancy" class="college-check" />
-                  <span>Business &amp; Accountancy</span>
+                  <span>Business and Accountancy</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_colleges" value="Computer Studies" class="college-check" />
@@ -202,7 +177,7 @@
               <div class="checkbox-grid-pills" id="year-pill-group">
                 <label class="pill-checkbox" id="year-all-label">
                   <input type="checkbox" name="target_years" value="All" class="year-check" id="year-all" />
-                  <span>🌟 All Years</span>
+                  <span>All Years</span>
                 </label>
                 <label class="pill-checkbox">
                   <input type="checkbox" name="target_years" value="1st Year" class="year-check" />
@@ -226,7 +201,6 @@
         </div>
 
         <div class="btn-publish-container">
-          <a href="admin_dashboard.html" class="btn btn-dash">← Cancel</a>
           <button type="submit" class="btn btn-dash btn-publish">Save Changes →</button>
         </div>
       </form>
