@@ -1,16 +1,11 @@
 'use strict';
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
-const pool   = require('../config/db');
+const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 const { authStudent } = require('../middleware/auth');
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 
-/* ──────────────────────────────────────────────────────────
-   POST /api/auth/signup
-   Body: { student_id, first_name, last_name, email, password,
-           college, course?, major?, year_level }
-────────────────────────────────────────────────────────── */
 router.post('/signup', async (req, res) => {
   const {
     student_id, first_name, last_name,
@@ -18,18 +13,15 @@ router.post('/signup', async (req, res) => {
     course, major, year_level,
   } = req.body;
 
-  // Required field check
   if (!student_id || !first_name || !last_name || !email || !password || !college || !year_level) {
     return res.status(400).json({ error: 'All required fields must be filled in.' });
   }
 
-  /* Email must be @plpasig.edu.ph */
   const emailLower = (email || '').trim().toLowerCase();
   if (!emailLower.endsWith('@plpasig.edu.ph')) {
     return res.status(400).json({ error: 'Email must be a @plpasig.edu.ph address.' });
   }
 
-  /* Student ID: only digits and hyphens */
   if (!/^[0-9-]+$/.test((student_id || '').trim())) {
     return res.status(400).json({ error: 'Student ID must contain only numbers.' });
   }
@@ -57,7 +49,7 @@ router.post('/signup', async (req, res) => {
         hash,
         college,
         course || null,
-        major  || null,
+        major || null,
         year_level,
       ],
     );
@@ -74,12 +66,6 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-/* ──────────────────────────────────────────────────────────
-   POST /api/auth/login
-   Body: { email, password }
-   Returns: { token, student: { id, name, email, college,
-              course, major, year_level } }
-────────────────────────────────────────────────────────── */
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -100,9 +86,9 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       {
-        id:         student.id,
-        email:      student.email,
-        college:    student.college,
+        id: student.id,
+        email: student.email,
+        college: student.college,
         year_level: student.year_level,
         name: `${student.first_name} ${student.last_name}`,
       },
@@ -113,14 +99,14 @@ router.post('/login', async (req, res) => {
     return res.json({
       token,
       student: {
-        id:         student.id,
-        name:       `${student.first_name} ${student.last_name}`,
+        id: student.id,
+        name: `${student.first_name} ${student.last_name}`,
         first_name: student.first_name,
-        last_name:  student.last_name,
-        email:      student.email,
-        college:    student.college,
-        course:     student.course,
-        major:      student.major,
+        last_name: student.last_name,
+        email: student.email,
+        college: student.college,
+        course: student.course,
+        major: student.major,
         year_level: student.year_level,
       },
     });
@@ -130,14 +116,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
-/* ──────────────────────────────────────────────────────────
-   POST /api/auth/logout  (stateless — just a signal)
-────────────────────────────────────────────────────────── */
 router.post('/logout', (_req, res) => res.json({ message: 'Logged out.' }));
 
-/* ──────────────────────────────────────────────────────────
-   GET /api/auth/profile  – fetch current student data
-────────────────────────────────────────────────────────── */
 router.get('/profile', authStudent, async (req, res) => {
   try {
     const [rows] = await pool.execute(
@@ -152,9 +132,6 @@ router.get('/profile', authStudent, async (req, res) => {
   }
 });
 
-/* ──────────────────────────────────────────────────────────
-   PUT /api/auth/profile  – update student info, returns new token
-────────────────────────────────────────────────────────── */
 router.put('/profile', authStudent, async (req, res) => {
   const { first_name, last_name, email, college, course, major, year_level } = req.body;
   if (!first_name || !last_name || !email || !college || !year_level)
@@ -185,14 +162,14 @@ router.put('/profile', authStudent, async (req, res) => {
     return res.json({
       token: newToken,
       student: {
-        id:         s.id,
-        name:       `${s.first_name} ${s.last_name}`,
+        id: s.id,
+        name: `${s.first_name} ${s.last_name}`,
         first_name: s.first_name,
-        last_name:  s.last_name,
-        email:      s.email,
-        college:    s.college,
-        course:     s.course,
-        major:      s.major,
+        last_name: s.last_name,
+        email: s.email,
+        college: s.college,
+        course: s.course,
+        major: s.major,
         year_level: s.year_level,
       },
     });

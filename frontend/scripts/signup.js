@@ -1,4 +1,3 @@
-// ─── Toast System ────────────────────────────────────────────────────────────
 (function () {
     const styles = `
     .toast-container {
@@ -59,23 +58,22 @@
     };
 })();
 
-// ─── College → Course → Major Cascade ────────────────────────────────────────
 const COURSES = {
     'Computer Studies': ['BS in Computer Science', 'BS in Information Technology'],
-    'Education':        ['Bachelor in Elementary Education (BEEd)', 'Bachelor in Secondary Education (BSEd)'],
+    'Education': ['Bachelor in Elementary Education (BEEd)', 'Bachelor in Secondary Education (BSEd)'],
 };
 
 const collegeEl = document.getElementById('signup-college');
-const courseEl  = document.getElementById('signup-course');
-const majorEl   = document.getElementById('signup-major');
+const courseEl = document.getElementById('signup-course');
+const majorEl = document.getElementById('signup-major');
 const courseRow = document.getElementById('course-row');
-const majorRow  = document.getElementById('major-row');
+const majorRow = document.getElementById('major-row');
 
 collegeEl.addEventListener('change', function () {
     const opts = COURSES[this.value];
     courseEl.innerHTML = '<option value="">-- Select Course --</option>';
-    courseEl.required  = false;
-    majorEl.required   = false;
+    courseEl.required = false;
+    majorEl.required = false;
     courseRow.classList.remove('visible');
     majorRow.classList.remove('visible');
     if (opts) {
@@ -98,16 +96,12 @@ courseEl.addEventListener('change', function () {
     }
 });
 
-// Allow only digits and dashes in Student ID
 document.getElementById('signup-studentid').addEventListener('input', function () {
     this.value = this.value.replace(/[^0-9-]/g, '');
 });
 
-// ─── Validation ───────────────────────────────────────────────────────────────
 function getValidationErrors(payload) {
     const errors = [];
-
-    // Name — treat both-empty as a single combined error
     const fnameEmpty = !payload.first_name;
     const lnameEmpty = !payload.last_name;
     if (fnameEmpty && lnameEmpty) {
@@ -118,7 +112,6 @@ function getValidationErrors(payload) {
         errors.push('Please fill in your last name.');
     }
 
-    // Email — empty vs wrong domain are separate cases
     if (!payload.email) {
         errors.push('Please fill in your email.');
     } else if (!payload.email.toLowerCase().endsWith('@plpasig.edu.ph')) {
@@ -141,12 +134,10 @@ function getValidationErrors(payload) {
         errors.push('Please select a year level.');
     }
 
-    // Course is only required when the selected college has courses
     if (courseEl.required && !payload.course) {
         errors.push('Please select a course.');
     }
 
-    // Major is only required for BSEd
     if (majorEl.required && !payload.major) {
         errors.push('Please select a major.');
     }
@@ -154,7 +145,6 @@ function getValidationErrors(payload) {
     return errors;
 }
 
-// ─── Sign-Up Form Submit ──────────────────────────────────────────────────────
 const signupForm = document.getElementById('signup-form');
 if (signupForm) {
     const submitBtn = signupForm.querySelector('button[type="submit"]');
@@ -164,30 +154,26 @@ if (signupForm) {
 
         const payload = {
             first_name: document.getElementById('signup-fname').value.trim(),
-            last_name:  document.getElementById('signup-lname').value.trim(),
-            email:      document.getElementById('signup-email').value.trim(),
-            password:   document.getElementById('signup-password').value,
+            last_name: document.getElementById('signup-lname').value.trim(),
+            email: document.getElementById('signup-email').value.trim(),
+            password: document.getElementById('signup-password').value,
             student_id: document.getElementById('signup-studentid').value.trim(),
-            college:    document.getElementById('signup-college').value,
-            course:     document.getElementById('signup-course').value  || null,
-            major:      document.getElementById('signup-major').value   || null,
+            college: document.getElementById('signup-college').value,
+            course: document.getElementById('signup-course').value  || null,
+            major: document.getElementById('signup-major').value   || null,
             year_level: document.getElementById('signup-year').value,
         };
 
-        // ── Validate ──────────────────────────────────────────────────────────
         const errors = getValidationErrors(payload);
 
         if (errors.length === 1) {
-            // Single issue → show its specific message
             showToast(errors[0], 'error');
             return;
         } else if (errors.length > 1) {
-            // Multiple issues → show the generic catch-all
             showToast('All required fields must be filled in.', 'error');
             return;
         }
 
-        // ── Submit ────────────────────────────────────────────────────────────
         submitBtn.textContent = 'Creating account…';
         submitBtn.disabled    = true;
 
@@ -199,8 +185,8 @@ if (signupForm) {
             const data = await res.json();
             if (!res.ok) {
                 showToast(data.error || 'Sign-up failed. Please try again.', 'error');
-                submitBtn.textContent = 'Sign Up →';
-                submitBtn.disabled    = false;
+                submitBtn.textContent = 'Sign Up';
+                submitBtn.disabled = false;
                 return;
             }
             showToast('Account created! Redirecting to login…', 'success');
@@ -208,7 +194,7 @@ if (signupForm) {
         } catch {
             showToast('Could not reach the server. Please make sure it is running.', 'error');
             submitBtn.textContent = 'Sign Up →';
-            submitBtn.disabled    = false;
+            submitBtn.disabled = false;
         }
     });
 }

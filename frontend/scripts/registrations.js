@@ -1,11 +1,12 @@
 const adminToken = localStorage.getItem('tugon_admin_token');
-if (!adminToken) window.location.href = 'login.html';
+if (!adminToken) 
+    window.location.href = 'login.html';
 
 async function apiFetch(url) {
     return fetch(url, { headers: { 'Authorization': 'Bearer ' + adminToken } });
 }
 
-const selector  = document.getElementById('event-selector');
+const selector = document.getElementById('event-selector');
 const container = document.getElementById('participants-container');
 let allEvents = [];
 let currentTab = 'All';
@@ -13,29 +14,24 @@ let currentYear = 'All';
 
 function audienceLabel(targetColleges, targetYears) {
     const isAllColleges = targetColleges.includes('All');
-    const isAllYears    = targetYears.includes('All');
-    const colLabel  = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
+    const isAllYears = targetYears.includes('All');
+    const colLabel = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
     const yearLabel = isAllYears    ? 'All Years'    : targetYears.join(', ');
     return `${colLabel} • ${yearLabel}`;
 }
 
-// ── Tab Switching Logic ──────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentTab = btn.dataset.college;
-        
-        // Reset year filter when changing colleges
         currentYear = 'All';
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.year-btn[data-year="All"]').classList.add('active');
-
         renderEventSelector();
     });
 });
 
-// ── Year Switching Logic ─────────────────────────────────────────────────────
 document.querySelectorAll('.year-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
@@ -47,7 +43,7 @@ document.querySelectorAll('.year-btn').forEach(btn => {
 
 async function loadEvents() {
     try {
-        const res    = await apiFetch('/api/admin/events');
+        const res = await apiFetch('/api/admin/events');
         const events = await res.json();
         if (!res.ok) {
             selector.innerHTML = '<p class="text-error">Failed to load events.</p>';
@@ -62,14 +58,12 @@ async function loadEvents() {
 
 function renderEventSelector() {
     const filtered = allEvents.filter(e => {
-        // 1. College Match
         const colMatch = (currentTab === 'All')
             ? e.target_colleges.includes('All')
             : e.target_colleges.includes(currentTab);
         
         if (!colMatch) return false;
 
-        // 2. Year Match
         if (currentYear === 'All') {
             return e.target_years.includes('All');
         } else {
@@ -109,7 +103,7 @@ async function loadParticipants(eventId) {
         let html = `<div class="participants-header">
             <h3><span>${list.length}</span> participant${list.length !== 1 ? 's' : ''} registered for <span>${event.title}</span></h3>
             <div class="target-audience-header" style="color:rgba(255,255,255,0.45); font-size:0.8rem; margin-top:0.4rem; font-weight:500;">
-                🎯 Target Audience: ${audience}
+                Target Audience: ${audience}
             </div>
         </div><div class="participants-list">`;
 

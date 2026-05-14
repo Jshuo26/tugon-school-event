@@ -1,13 +1,15 @@
 (function () {
     const adminToken = localStorage.getItem('tugon_admin_token');
-    if (!adminToken) { window.location.href = 'login.html'; return; }
+    if (!adminToken) { 
+        window.location.href = 'login.html'; return; 
+    }
 
-    const collegeAll            = document.getElementById('college-all');
-    const allCollegeChecks      = document.querySelectorAll('.college-check');
+    const collegeAll = document.getElementById('college-all');
+    const allCollegeChecks = document.querySelectorAll('.college-check');
     const specificCollegeChecks = Array.from(allCollegeChecks).filter(cb => cb.value !== 'All');
 
-    const yearAll            = document.getElementById('year-all');
-    const allYearChecks      = document.querySelectorAll('.year-check');
+    const yearAll = document.getElementById('year-all');
+    const allYearChecks = document.querySelectorAll('.year-check');
     const specificYearChecks = Array.from(allYearChecks).filter(cb => cb.value !== 'All');
 
     function updateCollegePillState() {
@@ -91,33 +93,59 @@
     }
 
     function validateAllFields() {
-        const title    = document.getElementById('event-title').value.trim();
-        const date     = document.getElementById('event-date').value;
+        const title = document.getElementById('event-title').value.trim();
+        const date = document.getElementById('event-date').value;
         const startTime = document.getElementById('start-time').value;
-        const endTime  = document.getElementById('end-time').value;
+        const endTime = document.getElementById('end-time').value;
         const location = document.getElementById('event-location').value;
         const description = document.getElementById('event-description').value.trim();
         const category = document.getElementById('event-category').value;
         const capacity = document.getElementById('event-capacity').value;
 
-        if (!title)       { showInlineError('Please provide an event title.'); return false; }
-        if (!date)        { showInlineError('Select a valid event date.'); return false; }
-        if (!startTime || !endTime) { showInlineError('Fill in both start and end time.'); return false; }
-        if (!location)    { showInlineError('Choose a venue / location.'); return false; }
-        if (!description) { showInlineError('Event description is required.'); return false; }
-        if (!category)    { showInlineError('Please select an event category.'); return false; }
-        if (!capacity || capacity < 1 || capacity > 300) { showInlineError('Capacity must be between 1 and 300.'); return false; }
+        if (!title) { 
+            showInlineError('Please provide an event title.'); 
+            return false; 
+        }
+        if (!date) { 
+            showInlineError('Select a valid event date.'); 
+            return false; 
+        }
+        if (!startTime || !endTime) { 
+            showInlineError('Fill in both start and end time.'); 
+            return false; 
+        }
+        if (!location) { 
+            showInlineError('Choose a venue / location.'); 
+            return false; 
+        }
+        if (!description) { 
+            showInlineError('Event description is required.'); 
+            return false; 
+        }
+        if (!category)    { 
+            showInlineError('Please select an event category.'); 
+            return false; 
+        }
+        if (!capacity || capacity < 1 || capacity > 300) { 
+            showInlineError('Capacity must be between 1 and 300.'); 
+            return false; 
+        }
 
         const colleges = getSelectedColleges();
-        const years    = getSelectedYears();
-        if (!colleges.length) { showInlineError('Select at least one target college (or "All Colleges").'); return false; }
-        if (!years.length)    { showInlineError('Select at least one target year level (or "All Years").'); return false; }
-
+        const years = getSelectedYears();
+        if (!colleges.length) { 
+            showInlineError('Select at least one target college (or "All Colleges").'); 
+            return false; 
+        }
+        if (!years.length)    { 
+            showInlineError('Select at least one target year level (or "All Years").'); 
+            return false; 
+        }
         clearInlineError();
         return true;
     }
 
-    const form       = document.getElementById('create-event-form');
+    const form = document.getElementById('create-event-form');
     const publishBtn = form?.querySelector('.btn-publish');
 
     form.addEventListener('submit', async function (e) {
@@ -125,7 +153,7 @@
         if (!validateAllFields()) return;
 
         const colleges = getSelectedColleges();
-        const years    = getSelectedYears();
+        const years = getSelectedYears();
 
         publishBtn.innerHTML = 'Publishing…';
         publishBtn.style.opacity = '0.7';
@@ -133,16 +161,16 @@
 
         try {
             const formData = new FormData();
-            formData.append('title',           document.getElementById('event-title').value.trim());
-            formData.append('date',            document.getElementById('event-date').value);
-            formData.append('start_time',      document.getElementById('start-time').value);
-            formData.append('end_time',        document.getElementById('end-time').value);
-            formData.append('location',        document.getElementById('event-location').value);
-            formData.append('description',     document.getElementById('event-description').value.trim());
-            formData.append('category',        document.getElementById('event-category').value);
-            formData.append('capacity',        document.getElementById('event-capacity').value);
+            formData.append('title', document.getElementById('event-title').value.trim());
+            formData.append('date', document.getElementById('event-date').value);
+            formData.append('start_time', document.getElementById('start-time').value);
+            formData.append('end_time', document.getElementById('end-time').value);
+            formData.append('location', document.getElementById('event-location').value);
+            formData.append('description', document.getElementById('event-description').value.trim());
+            formData.append('category', document.getElementById('event-category').value);
+            formData.append('capacity', document.getElementById('event-capacity').value);
             formData.append('target_colleges', JSON.stringify(colleges));
-            formData.append('target_years',    JSON.stringify(years));
+            formData.append('target_years', JSON.stringify(years));
 
             const imageFile = document.getElementById('event-image').files[0];
             if (imageFile) formData.append('event_image', imageFile);

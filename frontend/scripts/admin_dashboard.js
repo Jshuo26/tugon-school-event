@@ -7,26 +7,19 @@ let currentYear = 'All';
 
 const yearFilters = document.getElementById('year-filters');
 
-// ── Tab Switching Logic ──────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentTab = btn.dataset.college;
-        
-        // Reset year filter when changing colleges
         currentYear = 'All';
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.year-btn[data-year="All"]').classList.add('active');
-
-        // Show/hide year filters (Always show now as requested)
         yearFilters.style.display = 'flex';
-        
         loadEvents();
     });
 });
 
-// ── Year Switching Logic ─────────────────────────────────────────────────────
 document.querySelectorAll('.year-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
@@ -45,13 +38,16 @@ function getActiveScope() {
 async function apiFetch(url, opts = {}) {
     return fetch(url, {
         ...opts,
-        headers: { 'Authorization': 'Bearer ' + adminToken, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+        headers: {
+             'Authorization': 'Bearer ' + adminToken, 'Content-Type': 'application/json', 
+             ...(opts.headers || {}) 
+            },
     });
 }
 
 async function loadEvents(silent = false) {
     try {
-        const res    = await apiFetch('/api/admin/events');
+        const res = await apiFetch('/api/admin/events');
         const events = await res.json();
         if (!res.ok) {
             if (!silent) grid.innerHTML = '<p class="text-error">Failed to load events.</p>';
@@ -74,22 +70,20 @@ function featuredBadgeLabel(targetColleges, targetYears) {
 
 function audienceLabel(targetColleges, targetYears) {
     const isAllColleges = targetColleges.includes('All');
-    const isAllYears    = targetYears.includes('All');
-    const colLabel  = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
-    const yearLabel = isAllYears    ? 'All Years'    : targetYears.join(', ');
+    const isAllYears = targetYears.includes('All');
+    const colLabel = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
+    const yearLabel = isAllYears ? 'All Years' : targetYears.join(', ');
     return `${colLabel} • ${yearLabel}`;
 }
 
 function renderEvents(events) {
     const filtered = events.filter(e => {
-        // 1. College Match
         const colMatch = (currentTab === 'All')
             ? e.target_colleges.includes('All')
             : e.target_colleges.includes(currentTab);
         
         if (!colMatch) return false;
 
-        // 2. Year Match
         if (currentYear === 'All') {
             return e.target_years.includes('All');
         } else {
@@ -106,15 +100,13 @@ function renderEvents(events) {
 
     grid.innerHTML = filtered.map(e => {
         const dateStr    = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '';
-        // Check if pinned FOR THIS SPECIFIC SCOPE
         const isPinnedHere = e.is_featured && e.featured_scope === activeScope;
-        
         const seats      = seatsLabel(e);
         const full       = e.capacity && (e.registration_count || 0) >= e.capacity;
         const badgeLabel = e.is_featured ? featuredBadgeLabel(e.target_colleges, e.target_years) : '';
         const audience   = audienceLabel(e.target_colleges, e.target_years);
-
         return `
+
         <div class="event-card ${isPinnedHere ? 'featured' : ''}" data-id="${e.id}">
             <div class="event-info">
                 <h3>
@@ -122,19 +114,19 @@ function renderEvents(events) {
                     ${e.is_featured ? ` <span class="badge-featured" title="Pinned for: ${e.featured_scope}">${badgeLabel}</span>` : ''}
                 </h3>
                 <div class="event-meta">
-                    <span>📅 ${dateStr}</span>
-                    ${e.location ? `<span>📍 ${e.location}</span>` : ''}
-                    ${e.category ? `<span> ${e.category}</span>` : ''}
+                    <span>${dateStr}</span>
+                    ${e.location ? `<span>${e.location}</span>` : ''}
+                    ${e.category ? `<span>${e.category}</span>` : ''}
                     <span> ${seats}${full ? ' <span class="seats-full">(Full)</span>' : ''}</span>
                     <span class="audience-info" style="display:block; width:100%; margin-top:0.4rem; color:rgba(255,255,255,0.45); font-size:0.75rem;">
-                        🎯 Targets: ${audience}
+                        Targets: ${audience}
                     </span>
                 </div>
             </div>
             <div class="event-actions">
                 ${isPinnedHere
-                    ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">📌 Unpin</button>`
-                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin Event</button>`}
+                    ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">Unpin</button>`
+                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">Pin Event</button>`}
                 <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
                 <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, '${e.title.replace(/'/g, "\\'")}', this)"> Delete</button>
             </div>
@@ -146,13 +138,9 @@ function editEvent(id) {
     window.location.href = `edit_event.html?id=${id}`;
 }
 
-// ── Custom Confirm Modal ─────────────────────────────────────────────────────
-
 function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmClass = '', onConfirm }) {
-    // Remove any existing modal
     const existing = document.getElementById('admin-confirm-modal');
     if (existing) existing.remove();
-
     const overlay = document.createElement('div');
     overlay.id = 'admin-confirm-modal';
     overlay.className = 'admin-confirm-overlay';
@@ -170,7 +158,6 @@ function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmCla
 
     document.body.appendChild(overlay);
 
-    // Animate in
     requestAnimationFrame(() => overlay.classList.add('visible'));
 
     function close() {
@@ -186,8 +173,6 @@ function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmCla
     });
 }
 
-// ── Unpin ────────────────────────────────────────────────────────────────────
-
 async function unpin(id, title) {
     const scope = getActiveScope();
     const res = await apiFetch(`/api/admin/events/${id}/unpin?scope=${encodeURIComponent(scope)}`, { method: 'PUT' });
@@ -199,8 +184,6 @@ async function unpin(id, title) {
         showAdminToast(data.error || 'Failed to unpin.', 'error');
     }
 }
-
-// ── Pin ──────────────────────────────────────────────────────────────────────
 
 async function pinEvent(id) {
     const scope = getActiveScope();
@@ -214,17 +197,13 @@ async function pinEvent(id) {
     }
 }
 
-// ── Delete (two-step confirm) ─────────────────────────────────────────────────
-
 async function deleteEvent(id, title, btn) {
-    // Step 1: initial confirm
     showAdminConfirm({
         title: 'Delete Event?',
         message: `This will permanently delete <strong>${title}</strong> and all its registrations.`,
         confirmLabel: 'Continue',
         confirmClass: 'danger',
         onConfirm: () => {
-            // Step 2: final confirm with event name
             showAdminConfirm({
                 title: 'Are you sure?',
                 message: `You are about to permanently delete:<br><span class="confirm-event-name">"${title}"</span><br><br>This cannot be undone.`,
@@ -235,7 +214,6 @@ async function deleteEvent(id, title, btn) {
                     card.style.opacity    = '0';
                     card.style.transform  = 'translateX(20px)';
                     card.style.transition = 'all 0.3s ease';
-
                     const res = await apiFetch(`/api/admin/events/${id}`, { method: 'DELETE' });
                     if (res.ok) {
                         showAdminToast(`"${title}" deleted.`, 'error');

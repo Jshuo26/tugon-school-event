@@ -1,17 +1,16 @@
 const catColors = {
     Academic: 'cat-academic',
-    Cultural:  'cat-cultural',
-    Sports:    'cat-sports',
-    Social:    'cat-social',
-    Tech:      'cat-tech',
+    Cultural: 'cat-cultural',
+    Sports: 'cat-sports',
+    Social: 'cat-social',
+    Tech: 'cat-tech',
     Technology: 'cat-tech',
-    Others:    'cat-others',
 };
 
 function buildFeaturedSlide(e) {
     const dateStr = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '';
     const timeStr = [formatTime(e.start_time), formatTime(e.end_time)].filter(Boolean).join(' – ');
-    const full    = e.capacity && (e.registration_count || 0) >= e.capacity;
+    const full = e.capacity && (e.registration_count || 0) >= e.capacity;
     let btnLabel, btnClass = '';
     if (e.registered) {
         btnLabel = 'Unregister';
@@ -22,15 +21,15 @@ function buildFeaturedSlide(e) {
         btnLabel = 'Register Now';
     }
     return `
-    <p class="section-label">📌 Featured Event</p>
+    <p class="section-label">Featured Event</p>
     <h1>${e.title}</h1>
     <p class="desc">${e.description || ''}</p>
     <div class="event-meta-chips">
-        ${dateStr ? `<span class="meta-chip">📅 ${dateStr}</span>` : ''}
-        ${timeStr ? `<span class="meta-chip">🕗 ${timeStr}</span>`  : ''}
-        ${e.location ? `<span class="meta-chip">📍 ${e.location}</span>` : ''}
-        ${e.category ? `<span class="meta-chip">🎓 ${e.category}</span>` : ''}
-        ${e.capacity ? `<span class="meta-chip">👥 ${e.registration_count||0}/${e.capacity} Seats</span>` : ''}
+        ${dateStr ? `<span class="meta-chip">${dateStr}</span>` : ''}
+        ${timeStr ? `<span class="meta-chip"> ${timeStr}</span>`  : ''}
+        ${e.location ? `<span class="meta-chip">${e.location}</span>` : ''}
+        ${e.category ? `<span class="meta-chip">${e.category}</span>` : ''}
+        ${e.capacity ? `<span class="meta-chip">${e.registration_count||0}/${e.capacity} Seats</span>` : ''}
         <button class="btn btn-primary btn-sm register-btn ${btnClass}"
         data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}" ${full && !e.registered ? 'disabled' : ''}>
         ${btnLabel}
@@ -49,14 +48,10 @@ function renderFeaturedSlide() {
 
     const e = featuredEvents[currentFeaturedIndex];
     const newHtml = buildFeaturedSlide(e);
-    
-    // ONLY re-render if the content has actually changed to prevent flickering
+
     if (newHtml !== lastRenderedHtml) {
-        // Use a unique class for animation triggers
         container.innerHTML = `<div class="featured-slide-content">${newHtml}</div>`;
         lastRenderedHtml = newHtml;
-        
-        // Re-bind register button
         const regBtn = container.querySelector('.register-btn');
         if (regBtn) {
             regBtn.addEventListener('click', function() {
@@ -65,7 +60,6 @@ function renderFeaturedSlide() {
         }
     }
 
-    // Update indicators (only if they exist and changed)
     if (indicators) {
         const dotsHtml = featuredEvents.map((_, i) => 
             `<div class="indicator-dot ${i === currentFeaturedIndex ? 'active' : ''}" data-index="${i}"></div>`
@@ -82,7 +76,6 @@ function renderFeaturedSlide() {
         }
     }
 
-    // Show/hide controls and indicators based on count
     const controls = document.querySelector('.slideshow-controls');
     if (controls) {
         controls.style.display = featuredEvents.length > 1 ? 'flex' : 'none';
@@ -114,12 +107,10 @@ async function loadFeatured(silent = false) {
         featuredEvents = events;
         
         if (oldIds !== newIds) {
-            // If the set of events changed, reset index and force a re-render
             currentFeaturedIndex = 0;
             lastRenderedHtml = ''; 
             renderFeaturedSlide();
         } else {
-            // Just update data (renderFeaturedSlide handles the "no-change" check)
             renderFeaturedSlide();
         }
     } catch { 
@@ -127,7 +118,6 @@ async function loadFeatured(silent = false) {
     }
 }
 
-// ── Slideshow Navigation ──────────────────────────────────────────────────
 document.getElementById('prev-slide')?.addEventListener('click', () => {
     if (featuredEvents.length <= 1) return;
     currentFeaturedIndex = (currentFeaturedIndex - 1 + featuredEvents.length) % featuredEvents.length;
@@ -145,7 +135,7 @@ async function loadAllEvents(silent = false) {
     if (!grid) return;
     if (!silent) grid.innerHTML = '<p class="events-loading">Loading events…</p>';
     try {
-        const res    = await apiFetch('/api/events');
+        const res = await apiFetch('/api/events');
         const events = await res.json();
         if (!res.ok) { grid.innerHTML = '<p class="events-error">Failed to load events.</p>'; return; }
         if (!events.length) { grid.innerHTML = '<p class="events-empty">No events available for your college/year level yet.</p>'; return; }
@@ -197,13 +187,13 @@ async function loadAllEvents(silent = false) {
 async function handleRegister(id, btn) {
     if (btn.dataset.registered === '1') {
         btn.textContent = 'Unregistering…';
-        btn.disabled    = true;
+        btn.disabled = true;
         try {
             const res = await apiFetch(`/api/events/${id}/register`, { method: 'DELETE' });
             if (res.ok) {
-                btn.textContent        = 'Register Now';
+                btn.textContent = 'Register Now';
                 btn.dataset.registered = '0';
-                btn.disabled           = false;
+                btn.disabled = false;
                 btn.classList.remove('btn-full-disabled');
                 showToast('Successfully unregistered from event.', 'unregister');
                 loadFeatured(true);
@@ -212,38 +202,38 @@ async function handleRegister(id, btn) {
                 const data = await res.json();
                 showToast(data.error || 'Failed to unregister.', 'error');
                 btn.textContent = 'Unregister';
-                btn.disabled    = false;
+                btn.disabled = false;
             }
         } catch {
             showToast('Server unreachable.', 'error');
             btn.textContent = 'Unregister';
-            btn.disabled    = false;
+            btn.disabled = false;
         }
         return;
     }
     btn.textContent = 'Registering…';
-    btn.disabled    = true;
+    btn.disabled = true;
     try {
         const res  = await apiFetch(`/api/events/${id}/register`, { method: 'POST' });
         const data = await res.json();
         if (res.ok) {
-            btn.textContent        = 'Unregister';
+            btn.textContent = 'Unregister';
             btn.dataset.registered = '1';
-            btn.disabled           = false;
+            btn.disabled = false;
             showToast('Successfully registered for event!');
         } else if (res.status === 409 && data.error && data.error.includes('already registered')) {
-            btn.textContent        = 'Unregister';
+            btn.textContent = 'Unregister';
             btn.dataset.registered = '1';
-            btn.disabled           = false;
+            btn.disabled = false;
         } else {
             showToast(data.error || 'Registration failed.', 'error');
             btn.textContent = 'Register Now';
-            btn.disabled    = false;
+            btn.disabled = false;
         }
     } catch {
         showToast('Server unreachable.', 'error');
         btn.textContent = 'Register Now';
-        btn.disabled    = false;
+        btn.disabled = false;
     }
 }
 

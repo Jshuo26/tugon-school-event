@@ -1,6 +1,6 @@
 'use strict';
 const router = require('express').Router();
-const pool   = require('../config/db');
+const pool = require('../config/db');
 const { authStudent } = require('../middleware/auth');
 
 function parseJSON(v) {
@@ -10,9 +10,9 @@ function parseJSON(v) {
 }
 
 function isVisible(event, college, yearLevel) {
-  const cols  = parseJSON(event.target_colleges);
+  const cols = parseJSON(event.target_colleges);
   const years = parseJSON(event.target_years);
-  return (cols.includes('All')  || cols.includes(college))
+  return (cols.includes('All') || cols.includes(college))
       && (years.includes('All') || years.includes(yearLevel));
 }
 
@@ -36,9 +36,9 @@ router.get('/', authStudent, async (req, res) => {
         .filter(e => isVisible(e, college, year_level))
         .map(e => ({
           ...e,
-          target_colleges:    parseJSON(e.target_colleges),
-          target_years:       parseJSON(e.target_years),
-          registered:         mine.has(e.id),
+          target_colleges: parseJSON(e.target_colleges),
+          target_years: parseJSON(e.target_years),
+          registered: mine.has(e.id),
           registration_count: Number(e.registration_count) || 0,
         })),
     );
@@ -66,13 +66,16 @@ router.get('/featured', authStudent, async (req, res) => {
 
     const filtered = rows.filter(e => isVisible(e, college, year_level));
 
-    // Sort by priority hierarchy: All > All:Year > College > College:Year
     filtered.sort((a, b) => {
       const getPriority = (scope) => {
-        if (scope === 'All') return 1;
-        if (scope && scope.startsWith('All:')) return 2;
-        if (scope === college) return 3;
-        if (scope === `${college}:${year_level}`) return 4;
+        if (scope === 'All') 
+          return 1;
+        if (scope && scope.startsWith('All:')) 
+          return 2;
+        if (scope === college) 
+          return 3;
+        if (scope === `${college}:${year_level}`) 
+          return 4;
         return 5;
       };
       return getPriority(a.featured_scope) - getPriority(b.featured_scope);
@@ -80,9 +83,9 @@ router.get('/featured', authStudent, async (req, res) => {
 
     return res.json(filtered.map(e => ({
       ...e,
-      target_colleges:    parseJSON(e.target_colleges),
-      target_years:       parseJSON(e.target_years),
-      registered:         mine.has(e.id),
+      target_colleges: parseJSON(e.target_colleges),
+      target_years: parseJSON(e.target_years),
+      registered: mine.has(e.id),
       registration_count: Number(e.registration_count) || 0,
     })));
   } catch (err) {
@@ -103,7 +106,7 @@ router.get('/my-registrations', authStudent, async (req, res) => {
     return res.json(rows.map(e => ({
       ...e,
       target_colleges: parseJSON(e.target_colleges),
-      target_years:    parseJSON(e.target_years),
+      target_years: parseJSON(e.target_years),
     })));
   } catch (err) {
     console.error('[GET /events/my-registrations]', err);
@@ -130,9 +133,9 @@ router.get('/:id', authStudent, async (req, res) => {
     );
     return res.json({
       ...event,
-      target_colleges:    parseJSON(event.target_colleges),
-      target_years:       parseJSON(event.target_years),
-      registered:         reg.length > 0,
+      target_colleges: parseJSON(event.target_colleges),
+      target_years: parseJSON(event.target_years),
+      registered: reg.length > 0,
       registration_count: Number(event.registration_count) || 0,
     });
   } catch (err) {
@@ -143,7 +146,7 @@ router.get('/:id', authStudent, async (req, res) => {
 
 router.post('/:id/register', authStudent, async (req, res) => {
   const studentId = req.student.id;
-  const eventId   = Number(req.params.id);
+  const eventId = Number(req.params.id);
   try {
     const [evts] = await pool.execute('SELECT * FROM events WHERE id = ?', [eventId]);
     if (!evts.length) return res.status(404).json({ error: 'Event not found.' });

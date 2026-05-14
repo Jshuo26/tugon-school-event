@@ -6,7 +6,9 @@ function fmtDate(d) {
     if (!d) return '';
     return new Date(d).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
 }
-function fmtTime(t) { return formatTime(t); }
+function fmtTime(t) { 
+    return formatTime(t); 
+}
 
 function isFull(e) {
     return e.capacity && e.registration_count >= e.capacity;
@@ -19,7 +21,7 @@ function seatsLabel(e) {
 
 async function loadSchedule(silent = false) {
     try {
-        const res    = await apiFetch('/api/events');
+        const res = await apiFetch('/api/events');
         const events = await res.json();
         if (!res.ok) {
             if (!silent) tbody.innerHTML = '<tr><td colspan="8" class="td-error">Failed to load.</td></tr>';
@@ -29,7 +31,6 @@ async function loadSchedule(silent = false) {
             tbody.innerHTML = '<tr><td colspan="8" class="td-empty">No events for your college/year yet.</td></tr>';
             return;
         }
-
         allRows = events;
         const filtered = activeFilter === 'all' ? allRows : allRows.filter(e => (e.category || '').toLowerCase() === activeFilter);
         renderRows(filtered);
@@ -44,10 +45,10 @@ function renderRows(events) {
         return;
     }
     tbody.innerHTML = events.map(e => {
-        const cat      = (e.category || 'others').toLowerCase();
-        const timeStr  = [fmtTime(e.start_time), fmtTime(e.end_time)].filter(Boolean).join(' – ');
-        const full     = isFull(e);
-        const seats    = seatsLabel(e);
+        const cat = (e.category || 'others').toLowerCase();
+        const timeStr = [fmtTime(e.start_time), fmtTime(e.end_time)].filter(Boolean).join(' – ');
+        const full = isFull(e);
+        const seats = seatsLabel(e);
 
         let statusCell, actionCell;
         if (full && !e.registered) {
@@ -78,9 +79,9 @@ function renderRows(events) {
         btn.addEventListener('click', async function() {
             if (this.dataset.registered === '1') {
                 this.textContent = '…';
-                this.disabled    = true;
+                this.disabled = true;
                 try {
-                    const res  = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'DELETE' });
+                    const res = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'DELETE' });
                     const data = await res.json();
                     if (res.ok) {
                         showToast('Successfully unregistered from event.', 'unregister');
@@ -88,19 +89,19 @@ function renderRows(events) {
                     } else {
                         showToast(data.error || 'Failed to unregister.', 'error');
                         this.textContent = 'Unregister';
-                        this.disabled    = false;
+                        this.disabled = false;
                     }
                 } catch {
                     showToast('Server unreachable.', 'error');
                     this.textContent = 'Unregister';
-                    this.disabled    = false;
+                    this.disabled = false;
                 }
                 return;
             }
             this.textContent = '…';
-            this.disabled    = true;
+            this.disabled = true;
             try {
-                const res  = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'POST' });
+                const res = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'POST' });
                 const data = await res.json();
                 if (res.ok) {
                     this.textContent = 'Unregister';
@@ -117,12 +118,12 @@ function renderRows(events) {
                 } else {
                     showToast(data.error || 'Registration failed.', 'error');
                     this.textContent = 'Register';
-                    this.disabled    = false;
+                    this.disabled = false;
                 }
             } catch {
                 showToast('Server unreachable.', 'error');
                 this.textContent = 'Register';
-                this.disabled    = false;
+                this.disabled = false;
             }
         });
     });
@@ -139,5 +140,4 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 });
 
 loadSchedule();
-
 setInterval(() => loadSchedule(true), 10000);

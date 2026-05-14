@@ -46,7 +46,6 @@
   </nav>
 
   <main class="page-content">
-
     <section class="event-detail-hero">
       <div class="slideshow-controls">
         <button id="prev-slide" class="slide-nav-btn" aria-label="Previous Slide">❮</button>
@@ -98,28 +97,15 @@
     </div>
   </footer>
 
-  <!-- Profile Edit Modal -->
   <div id="profile-modal-overlay" class="profile-modal-overlay">
     <div class="profile-modal">
       <h3>Edit Profile</h3>
       <div class="pm-grid-2">
-        <div class="pm-field">
-          <label for="pm-first-name">First Name *</label>
-          <input id="pm-first-name" type="text" />
-        </div>
-        <div class="pm-field">
-          <label for="pm-last-name">Last Name *</label>
-          <input id="pm-last-name" type="text" />
-        </div>
-      </div>
-      <div class="pm-field">
-        <label for="pm-email">Email *</label>
-        <input id="pm-email" type="email" />
       </div>
       <div class="pm-field">
         <label for="pm-college">College *</label>
         <select id="pm-college">
-          <option value="">— Select College —</option>
+          <option value="" disabled selected hidden>— Select College —</option>
           <option>Education</option>
           <option>Computer Studies</option>
           <option>Nursing</option>
@@ -130,15 +116,15 @@
         </select>
       </div>
       <div id="pm-course-wrap" class="pm-field pm-hidden">
-        <label for="pm-course">Course *</label>
+        <label for="pm-course" disabled selected hidden>Course *</label>
         <select id="pm-course">
-          <option value="">-- Select Course --</option>
+          <option value="" disabled selected hidden>-- Select Course --</option>
         </select>
       </div>
       <div id="pm-major-wrap" class="pm-field pm-hidden">
-        <label for="pm-major">Major *</label>
+        <label for="pm-major" >Major *</label>
         <select id="pm-major">
-          <option value="">-- Select Major --</option>
+          <option value="" disabled selected hidden>-- Select Major --</option>
           <option value="English">English</option>
           <option value="Filipino">Filipino</option>
           <option value="Mathematics">Mathematics</option>
@@ -147,7 +133,7 @@
       <div class="pm-field">
         <label for="pm-year-level">Year Level *</label>
         <select id="pm-year-level">
-          <option value="">— Select Year —</option>
+          <option value="" disabled selected hidden>— Select Year —</option>
           <option>1st Year</option>
           <option>2nd Year</option>
           <option>3rd Year</option>
@@ -164,6 +150,5 @@
 
   <script src="../scripts/shared_student.js"></script>
   <script src="../scripts/event.js"></script>
-  
 </body>
 </html>

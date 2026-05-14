@@ -1,5 +1,4 @@
 (function() {
-    // Inject Admin Toast Styles
     const adminToastStyles = `
     .toast-container {
         position: fixed;

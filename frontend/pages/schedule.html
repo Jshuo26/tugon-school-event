@@ -10,7 +10,6 @@
   <link rel="icon" href="../assets/icons/icon.png" type="image/png" />
 </head>
 <body>
-
   <nav class="navbar">
     <a href="home.html" class="nav-logo">
       <img src="../assets/icons/icon.png" alt="TUGON Icon" />
@@ -109,27 +108,15 @@
     </div>
   </footer>
 
-  <div id="profile-modal-overlay" class="modal-overlay">
-    <div class="modal-box">
-      <h3 class="modal-title">Edit Profile</h3>
-      <div class="modal-grid-2">
-        <div>
-          <label class="modal-label">First Name *</label>
-          <input id="pm-first-name" type="text" class="modal-input" />
-        </div>
-        <div>
-          <label class="modal-label">Last Name *</label>
-          <input id="pm-last-name" type="text" class="modal-input" />
-        </div>
+  <div id="profile-modal-overlay" class="profile-modal-overlay">
+    <div class="profile-modal">
+      <h3>Edit Profile</h3>
+      <div class="pm-grid-2">
       </div>
-      <div class="modal-field">
-        <label class="modal-label">Email *</label>
-        <input id="pm-email" type="email" class="modal-input" />
-      </div>
-      <div class="modal-field">
-        <label class="modal-label">College *</label>
-        <select id="pm-college" class="modal-select">
-          <option value="">— Select College —</option>
+      <div class="pm-field">
+        <label for="pm-college">College *</label>
+        <select id="pm-college">
+          <option value="" disabled selected hidden>— Select College —</option>
           <option>Education</option>
           <option>Computer Studies</option>
           <option>Nursing</option>
@@ -139,41 +126,40 @@
           <option>Hospitality Management</option>
         </select>
       </div>
-      <div id="pm-course-wrap" class="modal-field modal-field--hidden">
-        <label class="modal-label">Course *</label>
-        <select id="pm-course" class="modal-select">
-          <option value="">-- Select Course --</option>
+      <div id="pm-course-wrap" class="pm-field pm-hidden">
+        <label for="pm-course" disabled selected hidden>Course *</label>
+        <select id="pm-course">
+          <option value="" disabled selected hidden>-- Select Course --</option>
         </select>
       </div>
-      <div id="pm-major-wrap" class="modal-field modal-field--hidden">
-        <label class="modal-label">Major *</label>
-        <select id="pm-major" class="modal-select">
-          <option value="">-- Select Major --</option>
+      <div id="pm-major-wrap" class="pm-field pm-hidden">
+        <label for="pm-major" >Major *</label>
+        <select id="pm-major">
+          <option value="" disabled selected hidden>-- Select Major --</option>
           <option value="English">English</option>
           <option value="Filipino">Filipino</option>
           <option value="Mathematics">Mathematics</option>
         </select>
       </div>
-      <div class="modal-field">
-        <label class="modal-label">Year Level *</label>
-        <select id="pm-year-level" class="modal-select">
-          <option value="">— Select Year —</option>
+      <div class="pm-field">
+        <label for="pm-year-level">Year Level *</label>
+        <select id="pm-year-level">
+          <option value="" disabled selected hidden>— Select Year —</option>
           <option>1st Year</option>
           <option>2nd Year</option>
           <option>3rd Year</option>
           <option>4th Year</option>
         </select>
       </div>
-      <p id="pm-error" class="modal-error"></p>
-      <div class="modal-actions">
-        <button id="pm-cancel" class="modal-btn-cancel">Cancel</button>
-        <button id="pm-save" class="modal-btn-save">Save Changes</button>
+      <p id="pm-error" class="pm-error"></p>
+      <div class="pm-actions">
+        <button id="pm-cancel" class="pm-btn-cancel">Cancel</button>
+        <button id="pm-save" class="pm-btn-save">Save Changes</button>
       </div>
     </div>
   </div>
 
   <script src="../scripts/shared_student.js"></script>
   <script src="../scripts/schedule.js"></script>
-  
 </body>
 </html>

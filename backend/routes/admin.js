@@ -1,12 +1,12 @@
 'use strict';
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const jwt    = require('jsonwebtoken');
-const pool   = require('../config/db');
+const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 const { authAdmin } = require('../middleware/auth');
 const multer = require('multer');
-const path   = require('path');
-const fs     = require('fs');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 
 function parseJSON(v) {
@@ -20,7 +20,7 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename:    (_req, file, cb) => {
+  filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
     cb(null, `event-${Date.now()}${ext}`);
   },
@@ -73,8 +73,8 @@ router.get('/events', authAdmin, async (req, res) => {
     `);
     return res.json(rows.map(e => ({
       ...e,
-      target_colleges:    parseJSON(e.target_colleges),
-      target_years:       parseJSON(e.target_years),
+      target_colleges: parseJSON(e.target_colleges),
+      target_years: parseJSON(e.target_years),
       registration_count: Number(e.registration_count) || 0,
     })));
   } catch (err) {
@@ -97,8 +97,8 @@ router.get('/events/:id', authAdmin, async (req, res) => {
     const e = rows[0];
     return res.json({
       ...e,
-      target_colleges:    parseJSON(e.target_colleges),
-      target_years:       parseJSON(e.target_years),
+      target_colleges: parseJSON(e.target_colleges),
+      target_years: parseJSON(e.target_years),
       registration_count: Number(e.registration_count) || 0,
     });
   } catch (err) {
@@ -121,10 +121,10 @@ router.post('/events', authAdmin, upload.single('event_image'), async (req, res)
   }
 
   const colleges = Array.isArray(target_colleges) ? target_colleges : parseJSON(target_colleges);
-  const years    = Array.isArray(target_years)    ? target_years    : parseJSON(target_years);
+  const years = Array.isArray(target_years) ? target_years : parseJSON(target_years);
 
   if (!colleges.length) return res.status(400).json({ error: 'Select at least one target college.' });
-  if (!years.length)    return res.status(400).json({ error: 'Select at least one target year level.' });
+  if (!years.length) return res.status(400).json({ error: 'Select at least one target year level.' });
 
   const image_url = req.file
     ? `/assets/uploads/events/${req.file.filename}`
@@ -173,10 +173,10 @@ router.put('/events/:id', authAdmin, upload.single('event_image'), async (req, r
   }
 
   const colleges = Array.isArray(target_colleges) ? target_colleges : parseJSON(target_colleges);
-  const years    = Array.isArray(target_years)    ? target_years    : parseJSON(target_years);
+  const years = Array.isArray(target_years) ? target_years : parseJSON(target_years);
 
   if (!colleges.length) return res.status(400).json({ error: 'Select at least one target college.' });
-  if (!years.length)    return res.status(400).json({ error: 'Select at least one target year level.' });
+  if (!years.length) return res.status(400).json({ error: 'Select at least one target year level.' });
 
   try {
     let sql, params;
@@ -221,7 +221,7 @@ router.put('/events/:id', authAdmin, upload.single('event_image'), async (req, r
 
 router.put('/events/:id/pin', authAdmin, async (req, res) => {
   const conn = await pool.getConnection();
-  const { scope } = req.query; // 'All', 'Nursing', etc.
+  const { scope } = req.query;
   
   if (!scope) {
     conn.release();
@@ -231,7 +231,6 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
   try {
     await conn.beginTransaction();
 
-    // ── Check if the event actually targets this scope ──────────
     const [evts] = await conn.execute(
       'SELECT id, target_colleges, target_years FROM events WHERE id = ?',
       [req.params.id],
@@ -251,7 +250,6 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
       const [c, y] = scope.split(':');
       canPin = (cols.includes('All') || cols.includes(c)) && (years.includes('All') || years.includes(y));
     } else {
-      // College-only scope
       canPin = cols.includes('All') || cols.includes(scope);
     }
     
@@ -260,16 +258,11 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
       return res.status(400).json({ error: `Event does not target ${scope.replace(':', ' - ')}.` });
     }
 
-    // ── Step 1: Unpin WHATEVER was pinned for this specific scope ─────────
-    // We search for events where featured_scope matches this scope.
-    // If we support multiple scopes per event, we'd need more complex logic.
-    // For now, let's assume featured_scope is a single scope.
     await conn.execute(
       'UPDATE events SET is_featured = 0, featured_scope = NULL WHERE featured_scope = ?',
       [scope]
     );
 
-    // ── Step 2: Pin the selected event for this scope ────────────
     await conn.execute(
       'UPDATE events SET is_featured = 1, featured_scope = ? WHERE id = ?',
       [scope, req.params.id],
@@ -323,7 +316,7 @@ router.get('/registrations', authAdmin, async (req, res) => {
              e.date AS event_date, e.category
       FROM registrations r
       JOIN students s ON r.student_id = s.id
-      JOIN events   e ON r.event_id   = e.id
+      JOIN events e ON r.event_id = e.id
       ORDER BY e.date ASC, r.registration_date DESC
     `);
     return res.json(rows);

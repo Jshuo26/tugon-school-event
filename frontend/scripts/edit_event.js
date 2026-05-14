@@ -3,17 +3,17 @@
     if (!adminToken) { window.location.href = 'login.html'; return; }
 
     
-    const params  = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
     const eventId = params.get('id');
     if (!eventId) { alert('No event ID specified.'); window.location.href = 'admin_dashboard.html'; return; }
 
     
-    const collegeAll           = document.getElementById('college-all');
-    const allCollegeChecks     = document.querySelectorAll('.college-check');
+    const collegeAll = document.getElementById('college-all');
+    const allCollegeChecks = document.querySelectorAll('.college-check');
     const specificCollegeChecks = Array.from(allCollegeChecks).filter(cb => cb.value !== 'All');
-    const yearAll              = document.getElementById('year-all');
-    const allYearChecks        = document.querySelectorAll('.year-check');
-    const specificYearChecks   = Array.from(allYearChecks).filter(cb => cb.value !== 'All');
+    const yearAll = document.getElementById('year-all');
+    const allYearChecks = document.querySelectorAll('.year-check');
+    const specificYearChecks = Array.from(allYearChecks).filter(cb => cb.value !== 'All');
 
     function updateCollegePillState() {
     if (collegeAll.checked) {
@@ -62,7 +62,6 @@
     updateYearPillState();
     }));
 
-    
     function getSelectedColleges() {
     const checked = Array.from(allCollegeChecks).filter(cb => cb.checked).map(cb => cb.value);
     return checked.includes('All') ? ['All'] : checked;
@@ -90,7 +89,6 @@
     if (e) e.style.display = 'none';
     }
 
-    
     async function loadEvent() {
     try {
         const res  = await fetch(`/api/admin/events/${eventId}`, {
@@ -147,32 +145,60 @@
     }
     }
 
-    const form       = document.getElementById('edit-event-form');
+    const form = document.getElementById('edit-event-form');
     const publishBtn = form?.querySelector('.btn-publish');
 
     form.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const title    = document.getElementById('event-title').value.trim();
-    const date     = document.getElementById('event-date').value;
-    const startTime= document.getElementById('start-time').value;
-    const endTime  = document.getElementById('end-time').value;
+    const title = document.getElementById('event-title').value.trim();
+    const date = document.getElementById('event-date').value;
+    const startTime = document.getElementById('start-time').value;
+    const endTime = document.getElementById('end-time').value;
     const location = document.getElementById('event-location').value;
-    const desc     = document.getElementById('event-description').value.trim();
+    const desc = document.getElementById('event-description').value.trim();
     const category = document.getElementById('event-category').value;
     const capacity = document.getElementById('event-capacity').value;
     const colleges = getSelectedColleges();
-    const years    = getSelectedYears();
+    const years = getSelectedYears();
 
-    if (!title)    { showInlineError('❌ Please provide an event title.'); return; }
-    if (!date)     { showInlineError('❌ Select a valid event date.'); return; }
-    if (!startTime || !endTime) { showInlineError('❌ Fill in both start and end time.'); return; }
-    if (!location) { showInlineError('❌ Choose a venue / location.'); return; }
-    if (!desc)     { showInlineError('❌ Event description is required.'); return; }
-    if (!category) { showInlineError('❌ Please select an event category.'); return; }
-    if (!capacity || capacity < 1 || capacity > 300) { showInlineError('❌ Capacity must be between 1 and 300.'); return; }
-    if (!colleges.length) { showInlineError('🎯 Select at least one target college (or "All Colleges").'); return; }
-    if (!years.length)    { showInlineError('📆 Select at least one target year level (or "All Years").'); return; }
+    if (!title) { 
+        showInlineError('Please provide an event title.'); 
+        return; 
+    }
+    if (!date) { showInlineError('Select a valid event date.'); 
+        return; 
+
+    }
+    if (!startTime || !endTime) { 
+        showInlineError('Fill in both start and end time.'); 
+        return; 
+    }
+    if (!location) { 
+        showInlineError('Choose a venue / location.'); 
+        return; 
+
+    }
+    if (!desc) { 
+        showInlineError('Event description is required.'); 
+        return; 
+
+    }
+    if (!category) { 
+        showInlineError('Please select an event category.'); 
+        return; 
+    }
+    if (!capacity || capacity < 1 || capacity > 300) { 
+        showInlineError('Capacity must be between 1 and 300.'); 
+        return; }
+    if (!colleges.length) { 
+        showInlineError('Select at least one target college (or "All Colleges").'); 
+        return; 
+    }
+    if (!years.length) { 
+        showInlineError('Select at least one target year level (or "All Years").'); 
+        return; 
+    }
 
     clearInlineError();
 
@@ -182,16 +208,16 @@
 
     try {
         const formData = new FormData();
-        formData.append('title',           title);
-        formData.append('date',            date);
-        formData.append('start_time',      startTime);
-        formData.append('end_time',        endTime);
-        formData.append('location',        location);
-        formData.append('description',     desc);
-        formData.append('category',        category);
-        formData.append('capacity',        String(parseInt(capacity, 10)));
+        formData.append('title', title);
+        formData.append('date', date);
+        formData.append('start_time', startTime);
+        formData.append('end_time', endTime);
+        formData.append('location', location);
+        formData.append('description', desc);
+        formData.append('category', category);
+        formData.append('capacity', String(parseInt(capacity, 10)));
         formData.append('target_colleges', JSON.stringify(colleges));
-        formData.append('target_years',    JSON.stringify(years));
+        formData.append('target_years', JSON.stringify(years));
 
         const imageFile = document.getElementById('event-image').files[0];
         if (imageFile) formData.append('event_image', imageFile);
@@ -220,6 +246,6 @@
         publishBtn.style.pointerEvents = '';
     }
     });
-
+    
     loadEvent();
     })();

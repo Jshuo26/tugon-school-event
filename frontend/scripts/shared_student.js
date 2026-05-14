@@ -10,10 +10,8 @@ if (!token || !student) {
     const yrEl = document.getElementById('dropdown-year');
     if (yrEl) yrEl.textContent = student.year_level || '';
 
-    // ── Check if profile was just updated ──────────────────────────────
     if (localStorage.getItem('tugon_profile_updated') === 'true') {
         localStorage.removeItem('tugon_profile_updated');
-        // We'll show the toast after a short delay so the page looks settled
         setTimeout(() => {
             showToast('Profile updated successfully!', 'success');
         }, 300);
@@ -50,8 +48,8 @@ function formatTime(t) {
 
 function pmUpdateCourse(college, courseVal) {
     const courseWrap = document.getElementById('pm-course-wrap');
-    const majorWrap  = document.getElementById('pm-major-wrap');
-    const courseEl   = document.getElementById('pm-course');
+    const majorWrap = document.getElementById('pm-major-wrap');
+    const courseEl = document.getElementById('pm-course');
     const opts = PM_COURSES[college];
     courseEl.innerHTML = '<option value="">-- Select Course --</option>';
     majorWrap.style.display  = 'none';
@@ -101,9 +99,6 @@ document.getElementById('edit-profile-link').addEventListener('click', async (e)
 
 function openProfileModal(s) {
     document.getElementById('profile-modal-overlay').style.display = 'flex';
-    document.getElementById('pm-first-name').value  = s.first_name || (s.name || '').split(' ')[0] || '';
-    document.getElementById('pm-last-name').value   = s.last_name  || (s.name || '').split(' ').slice(1).join(' ') || '';
-    document.getElementById('pm-email').value       = s.email      || '';
     document.getElementById('pm-college').value     = s.college    || '';
     document.getElementById('pm-year-level').value  = s.year_level || '';
     document.getElementById('pm-error').textContent = '';
@@ -118,7 +113,6 @@ document.getElementById('profile-modal-overlay').addEventListener('click', funct
     if (e.target === this) this.style.display = 'none';
 });
 
-// Toast Notification System
 const toastStyles = `
 .toast-container {
     position: fixed;
@@ -189,19 +183,15 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
-// ── Profile Save Logic ───────────────────────────────────────────────────────
 const pmSaveBtn = document.getElementById('pm-save');
 if (pmSaveBtn) {
     pmSaveBtn.addEventListener('click', async () => {
         const errEl = document.getElementById('pm-error');
         errEl.textContent = '';
         const body = {
-            first_name: document.getElementById('pm-first-name').value.trim(),
-            last_name:  document.getElementById('pm-last-name').value.trim(),
-            email:      document.getElementById('pm-email').value.trim(),
-            college:    document.getElementById('pm-college').value,
-            course:     document.getElementById('pm-course').value || null,
-            major:      document.getElementById('pm-major').value || null,
+            college: document.getElementById('pm-college').value,
+            course: document.getElementById('pm-course').value || null,
+            major: document.getElementById('pm-major').value || null,
             year_level: document.getElementById('pm-year-level').value,
         };
         if (!body.first_name || !body.last_name || !body.email || !body.college || !body.year_level) {
@@ -209,14 +199,13 @@ if (pmSaveBtn) {
         }
         pmSaveBtn.textContent = 'Saving…'; pmSaveBtn.disabled = true;
         try {
-            const res  = await apiFetch('/api/auth/profile', { method: 'PUT', body: JSON.stringify(body) });
+            const res = await apiFetch('/api/auth/profile', { method: 'PUT', body: JSON.stringify(body) });
             const data = await res.json();
             if (res.ok) {
                 localStorage.setItem('tugon_token', data.token);
                 localStorage.setItem('tugon_student', JSON.stringify(data.student));
                 localStorage.setItem('tugon_profile_updated', 'true');
                 document.getElementById('profile-modal-overlay').style.display = 'none';
-                // Auto refresh to reflect changes everywhere
                 location.reload();
             } else {
                 errEl.textContent = data.error || 'Update failed.';
@@ -224,4 +213,4 @@ if (pmSaveBtn) {
         } catch { errEl.textContent = 'Server unreachable.'; }
         pmSaveBtn.textContent = 'Save Changes'; pmSaveBtn.disabled = false;
     });
-}
+}

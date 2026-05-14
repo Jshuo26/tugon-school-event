@@ -1,4 +1,3 @@
-// ─── Toast System ────────────────────────────────────────────────────────────
 (function () {
     const styles = `
     .toast-container {
@@ -27,15 +26,15 @@
         animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
     }
     .toast.success { border-left-color: #2dd4bf; }
-    .toast.error   { border-left-color: #ff4444; }
-    .toast.info    { border-left-color: #007a7a; }
+    .toast.error { border-left-color: #ff4444; }
+    .toast.info { border-left-color: #007a7a; }
     @keyframes toastIn {
         from { opacity: 0; transform: translateX(50px); }
-        to   { opacity: 1; transform: translateX(0); }
+        to { opacity: 1; transform: translateX(0); }
     }
     @keyframes toastOut {
         from { opacity: 1; transform: translateX(0); }
-        to   { opacity: 0; transform: translateX(50px); }
+        to { opacity: 0; transform: translateX(50px); }
     }
     `;
     const sheet = document.createElement('style');
@@ -59,18 +58,17 @@
     };
 })();
 
-// ─── Student Login ────────────────────────────────────────────────────────────
 const loginForm = document.getElementById('login-form');
 if (loginForm) {
     const submitBtn = loginForm.querySelector('button[type="submit"]');
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email    = document.getElementById('login-email').value.trim();
+        const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
         submitBtn.textContent = 'Logging in…';
-        submitBtn.disabled    = true;
+        submitBtn.disabled = true;
         try {
-            const res  = await fetch('/api/auth/login', {
+            const res = await fetch('/api/auth/login', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
@@ -78,7 +76,7 @@ if (loginForm) {
             if (!res.ok) {
                 showToast(data.error || 'Wrong email or password.', 'error');
                 submitBtn.textContent = 'Log In →';
-                submitBtn.disabled    = false;
+                submitBtn.disabled = false;
                 return;
             }
             localStorage.setItem('tugon_token',   data.token);
@@ -87,16 +85,15 @@ if (loginForm) {
         } catch {
             showToast('Could not reach the server. Please make sure it is running.', 'error');
             submitBtn.textContent = 'Log In →';
-            submitBtn.disabled    = false;
+            submitBtn.disabled = false;
         }
     });
 }
 
-// ─── Admin Modal ──────────────────────────────────────────────────────────────
 (function () {
     let clickCount = 0, clickTimer = null;
-    const trigger  = document.getElementById('admin-trigger');
-    const modal    = document.getElementById('admin-modal');
+    const trigger = document.getElementById('admin-trigger');
+    const modal = document.getElementById('admin-modal');
     const closeBtn = document.getElementById('close-admin-modal');
 
     if (trigger) {
@@ -126,9 +123,9 @@ if (loginForm) {
             const username = document.getElementById('admin-username').value.trim();
             const password = document.getElementById('admin-password').value;
             adminBtn.textContent = 'Signing in…';
-            adminBtn.disabled    = true;
+            adminBtn.disabled = true;
             try {
-                const res  = await fetch('/api/admin/login', {
+                const res = await fetch('/api/admin/login', {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password }),
                 });
@@ -136,7 +133,7 @@ if (loginForm) {
                 if (!res.ok) {
                     showToast(data.error || 'Invalid administrator credentials.', 'error');
                     adminBtn.textContent = 'Sign In as Admin →';
-                    adminBtn.disabled    = false;
+                    adminBtn.disabled = false;
                     return;
                 }
                 localStorage.setItem('tugon_admin_token', data.token);
@@ -145,7 +142,7 @@ if (loginForm) {
             } catch {
                 showToast('Could not reach the server.', 'error');
                 adminBtn.textContent = 'Sign In as Admin →';
-                adminBtn.disabled    = false;
+                adminBtn.disabled = false;
             }
         });
     }
