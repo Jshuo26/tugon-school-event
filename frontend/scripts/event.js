@@ -40,6 +40,7 @@ function buildFeaturedSlide(e) {
 
 let featuredEvents = [];
 let currentFeaturedIndex = 0;
+let lastRenderedHtml = '';
 
 function renderFeaturedSlide() {
     const container = document.getElementById('featured-container');
@@ -47,30 +48,38 @@ function renderFeaturedSlide() {
     if (!container || !featuredEvents.length) return;
 
     const e = featuredEvents[currentFeaturedIndex];
+    const newHtml = buildFeaturedSlide(e);
     
-    // Use a unique class for animation triggers
-    container.innerHTML = `<div class="featured-slide-content" key="${e.id}">${buildFeaturedSlide(e)}</div>`;
-    
-    // Re-bind register button
-    const regBtn = container.querySelector('.register-btn');
-    if (regBtn) {
-        regBtn.addEventListener('click', function() {
-            handleRegister(e.id, this);
-        });
+    // ONLY re-render if the content has actually changed to prevent flickering
+    if (newHtml !== lastRenderedHtml) {
+        // Use a unique class for animation triggers
+        container.innerHTML = `<div class="featured-slide-content">${newHtml}</div>`;
+        lastRenderedHtml = newHtml;
+        
+        // Re-bind register button
+        const regBtn = container.querySelector('.register-btn');
+        if (regBtn) {
+            regBtn.addEventListener('click', function() {
+                handleRegister(e.id, this);
+            });
+        }
     }
 
-    // Update indicators
+    // Update indicators (only if they exist and changed)
     if (indicators) {
-        indicators.innerHTML = featuredEvents.map((_, i) => 
+        const dotsHtml = featuredEvents.map((_, i) => 
             `<div class="indicator-dot ${i === currentFeaturedIndex ? 'active' : ''}" data-index="${i}"></div>`
         ).join('');
         
-        indicators.querySelectorAll('.indicator-dot').forEach(dot => {
-            dot.addEventListener('click', () => {
-                currentFeaturedIndex = parseInt(dot.dataset.index);
-                renderFeaturedSlide();
+        if (indicators.innerHTML !== dotsHtml) {
+            indicators.innerHTML = dotsHtml;
+            indicators.querySelectorAll('.indicator-dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    currentFeaturedIndex = parseInt(dot.dataset.index);
+                    renderFeaturedSlide();
+                });
             });
-        });
+        }
     }
 
     // Show/hide controls and indicators based on count
@@ -90,25 +99,27 @@ async function loadFeatured(silent = false) {
     try {
         const res    = await apiFetch('/api/events/featured');
         const events = await res.json();
+        
         if (!res.ok || !events.length) {
             container.innerHTML = '<p class="section-label featured-empty">No featured events for your college or year level.</p>';
             featuredEvents = [];
-            renderFeaturedSlide(); // Will clear controls
+            lastRenderedHtml = '';
+            renderFeaturedSlide();
             return;
         }
         
-        // Check if data actually changed to avoid jumpy UI on auto-refresh
         const oldIds = featuredEvents.map(e => e.id).join(',');
         const newIds = events.map(e => e.id).join(',');
         
         featuredEvents = events;
         
         if (oldIds !== newIds) {
+            // If the set of events changed, reset index and force a re-render
             currentFeaturedIndex = 0;
+            lastRenderedHtml = ''; 
             renderFeaturedSlide();
         } else {
-            // Just update current slide data (like registration status) without re-rendering everything if possible
-            // But for simplicity, we re-render but maintain the index
+            // Just update data (renderFeaturedSlide handles the "no-change" check)
             renderFeaturedSlide();
         }
     } catch { 
