@@ -7,6 +7,15 @@ async function apiFetch(url) {
 
 const selector  = document.getElementById('event-selector');
 const container = document.getElementById('participants-container');
+let allEvents = [];
+
+function audienceLabel(targetColleges, targetYears) {
+    const isAllColleges = targetColleges.includes('All');
+    const isAllYears    = targetYears.includes('All');
+    const colLabel  = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
+    const yearLabel = isAllYears    ? 'All Years'    : targetYears.join(', ');
+    return `${colLabel} • ${yearLabel}`;
+}
 
 async function loadEvents() {
     try {
@@ -16,6 +25,7 @@ async function loadEvents() {
             selector.innerHTML = '<p class="text-muted">No events found.</p>';
             return;
         }
+        allEvents = events;
         selector.innerHTML = events.map(e =>
             `<button class="btn-event-pill" data-id="${e.id}">${e.title}</button>`
         ).join('');
@@ -24,7 +34,7 @@ async function loadEvents() {
             btn.addEventListener('click', () => {
                 selector.querySelectorAll('.btn-event-pill').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                loadParticipants(btn.dataset.id, btn.textContent);
+                loadParticipants(btn.dataset.id);
             });
         });
     } catch {
@@ -32,14 +42,22 @@ async function loadEvents() {
     }
 }
 
-async function loadParticipants(eventId, eventName) {
+async function loadParticipants(eventId) {
+    const event = allEvents.find(e => e.id == eventId);
+    if (!event) return;
+
     container.innerHTML = '<p class="text-loading">Loading…</p>';
     try {
         const res  = await apiFetch(`/api/admin/registrations/${eventId}`);
         const list = await res.json();
 
+        const audience = audienceLabel(event.target_colleges, event.target_years);
+
         let html = `<div class="participants-header">
-            <h3><span>${list.length}</span> participant${list.length !== 1 ? 's' : ''} registered for <span>${eventName}</span></h3>
+            <h3><span>${list.length}</span> participant${list.length !== 1 ? 's' : ''} registered for <span>${event.title}</span></h3>
+            <div class="target-audience-header" style="color:rgba(255,255,255,0.45); font-size:0.8rem; margin-top:0.4rem; font-weight:500;">
+                🎯 Target Audience: ${audience}
+            </div>
         </div><div class="participants-list">`;
 
         if (!list.length) {

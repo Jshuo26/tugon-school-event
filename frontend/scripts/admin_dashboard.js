@@ -69,12 +69,15 @@ function seatsLabel(e) {
 }
 
 function featuredBadgeLabel(targetColleges, targetYears) {
+    return `Featured (${audienceLabel(targetColleges, targetYears)})`;
+}
+
+function audienceLabel(targetColleges, targetYears) {
     const isAllColleges = targetColleges.includes('All');
     const isAllYears    = targetYears.includes('All');
-    if (isAllColleges && isAllYears) return 'Featured (All Colleges · All Years)';
     const colLabel  = isAllColleges ? 'All Colleges' : targetColleges.join(', ');
     const yearLabel = isAllYears    ? 'All Years'    : targetYears.join(', ');
-    return `Featured (${colLabel} · ${yearLabel})`;
+    return `${colLabel} • ${yearLabel}`;
 }
 
 function renderEvents(events) {
@@ -112,6 +115,7 @@ function renderEvents(events) {
         const seats      = seatsLabel(e);
         const full       = e.capacity && (e.registration_count || 0) >= e.capacity;
         const badgeLabel = e.is_featured ? featuredBadgeLabel(e.target_colleges, e.target_years) : '';
+        const audience   = audienceLabel(e.target_colleges, e.target_years);
 
         return `
         <div class="event-card ${isPinnedHere ? 'featured' : ''}" data-id="${e.id}">
@@ -125,6 +129,9 @@ function renderEvents(events) {
                     ${e.location ? `<span>📍 ${e.location}</span>` : ''}
                     ${e.category ? `<span> ${e.category}</span>` : ''}
                     <span> ${seats}${full ? ' <span class="seats-full">(Full)</span>' : ''}</span>
+                    <span class="audience-info" style="display:block; width:100%; margin-top:0.4rem; color:rgba(255,255,255,0.45); font-size:0.75rem;">
+                        🎯 Targets: ${audience}
+                    </span>
                 </div>
             </div>
             <div class="event-actions">
