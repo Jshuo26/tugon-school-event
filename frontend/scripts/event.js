@@ -38,24 +38,96 @@ function buildFeaturedSlide(e) {
     </div>`;
 }
 
+let featuredEvents = [];
+let currentFeaturedIndex = 0;
+
+function renderFeaturedSlide() {
+    const container = document.getElementById('featured-container');
+    const indicators = document.getElementById('slideshow-indicators');
+    if (!container || !featuredEvents.length) return;
+
+    const e = featuredEvents[currentFeaturedIndex];
+    
+    // Use a unique class for animation triggers
+    container.innerHTML = `<div class="featured-slide-content" key="${e.id}">${buildFeaturedSlide(e)}</div>`;
+    
+    // Re-bind register button
+    const regBtn = container.querySelector('.register-btn');
+    if (regBtn) {
+        regBtn.addEventListener('click', function() {
+            handleRegister(e.id, this);
+        });
+    }
+
+    // Update indicators
+    if (indicators) {
+        indicators.innerHTML = featuredEvents.map((_, i) => 
+            `<div class="indicator-dot ${i === currentFeaturedIndex ? 'active' : ''}" data-index="${i}"></div>`
+        ).join('');
+        
+        indicators.querySelectorAll('.indicator-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentFeaturedIndex = parseInt(dot.dataset.index);
+                renderFeaturedSlide();
+            });
+        });
+    }
+
+    // Show/hide controls and indicators based on count
+    const controls = document.querySelector('.slideshow-controls');
+    if (controls) {
+        controls.style.display = featuredEvents.length > 1 ? 'flex' : 'none';
+    }
+    if (indicators) {
+        indicators.style.display = featuredEvents.length > 1 ? 'flex' : 'none';
+    }
+}
+
 async function loadFeatured(silent = false) {
     const container = document.getElementById('featured-container');
     if (!container) return;
-    if (!silent) container.innerHTML = '<p class="loading-text">Loading featured event…</p>';
+    if (!silent && !featuredEvents.length) container.innerHTML = '<p class="loading-text">Loading featured events…</p>';
     try {
         const res    = await apiFetch('/api/events/featured');
         const events = await res.json();
         if (!res.ok || !events.length) {
-            container.innerHTML = '<p class="section-label featured-empty">No featured event for your college or year level.</p>';
+            container.innerHTML = '<p class="section-label featured-empty">No featured events for your college or year level.</p>';
+            featuredEvents = [];
+            renderFeaturedSlide(); // Will clear controls
             return;
         }
-        const featured = events[0];
-        container.innerHTML = buildFeaturedSlide(featured);
-        container.querySelector('.register-btn').addEventListener('click', function() {
-            handleRegister(featured.id, this);
-        });
-    } catch { container.innerHTML = ''; }
+        
+        // Check if data actually changed to avoid jumpy UI on auto-refresh
+        const oldIds = featuredEvents.map(e => e.id).join(',');
+        const newIds = events.map(e => e.id).join(',');
+        
+        featuredEvents = events;
+        
+        if (oldIds !== newIds) {
+            currentFeaturedIndex = 0;
+            renderFeaturedSlide();
+        } else {
+            // Just update current slide data (like registration status) without re-rendering everything if possible
+            // But for simplicity, we re-render but maintain the index
+            renderFeaturedSlide();
+        }
+    } catch { 
+        if (!featuredEvents.length) container.innerHTML = ''; 
+    }
 }
+
+// ── Slideshow Navigation ──────────────────────────────────────────────────
+document.getElementById('prev-slide')?.addEventListener('click', () => {
+    if (featuredEvents.length <= 1) return;
+    currentFeaturedIndex = (currentFeaturedIndex - 1 + featuredEvents.length) % featuredEvents.length;
+    renderFeaturedSlide();
+});
+
+document.getElementById('next-slide')?.addEventListener('click', () => {
+    if (featuredEvents.length <= 1) return;
+    currentFeaturedIndex = (currentFeaturedIndex + 1) % featuredEvents.length;
+    renderFeaturedSlide();
+});
 
 async function loadAllEvents(silent = false) {
     const grid = document.getElementById('events-grid');

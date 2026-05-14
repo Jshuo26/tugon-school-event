@@ -229,6 +229,74 @@ p  { font-size: 1rem; line-height: 1.7; color: var(--gray-mid); }
   position: relative; z-index: 2;
   max-width: 1280px; margin: 0 auto;
 }
+
+/* ─── Slideshow Controls ────────────────────────────── */
+.slideshow-controls {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  z-index: 10;
+  pointer-events: none;
+}
+.slide-nav-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 122, 122, 0.3);
+  color: var(--white);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+}
+.slide-nav-btn:hover {
+  background: var(--teal-main);
+  border-color: var(--teal-light);
+  transform: scale(1.1);
+  box-shadow: var(--shadow-pop);
+}
+
+.slideshow-indicators {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.6rem;
+  z-index: 10;
+}
+.indicator-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.indicator-dot.active {
+  background: var(--teal-main);
+  width: 28px;
+  border-radius: 5px;
+}
+
+/* ─── Slide Animation ────────────────────────────────── */
+.featured-slide-content {
+  animation: slideFadeIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+@keyframes slideFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .event-detail-text .section-label { color: var(--teal-light); }
 .event-detail-text h1 {
   color: var(--white); margin: 0.5rem 0 1rem;

@@ -51,79 +51,40 @@ router.get('/', authStudent, async (req, res) => {
 router.get('/featured', authStudent, async (req, res) => {
   const { college, year_level, id: studentId } = req.student;
   try {
-    // ── Priority 1: Check for Global Pin ('All') ──────────────────────
-    const [globalRows] = await pool.execute(
+    const [rows] = await pool.execute(
       `SELECT e.*, COUNT(r.event_id) AS registration_count
        FROM events e
        LEFT JOIN registrations r ON r.event_id = e.id
-       WHERE e.is_featured = 1 AND e.featured_scope = 'All'
-       GROUP BY e.id
-       LIMIT 1`,
+       WHERE e.is_featured = 1
+       GROUP BY e.id`
     );
-
-    let event = globalRows.length ? globalRows[0] : null;
-
-    // ── Priority 1.5: Check for Global-Year Pin ('All:Year') ───────────
-    if (!event) {
-      const scope = `All:${year_level}`;
-      const [gyRows] = await pool.execute(
-        `SELECT e.*, COUNT(r.event_id) AS registration_count
-         FROM events e
-         LEFT JOIN registrations r ON r.event_id = e.id
-         WHERE e.is_featured = 1 AND e.featured_scope = ?
-         GROUP BY e.id
-         LIMIT 1`,
-        [scope]
-      );
-      if (gyRows.length) event = gyRows[0];
-    }
-
-    // ── Priority 2: If no global pin, check for College-wide Pin ──────
-    if (!event) {
-      const [collegeRows] = await pool.execute(
-        `SELECT e.*, COUNT(r.event_id) AS registration_count
-         FROM events e
-         LEFT JOIN registrations r ON r.event_id = e.id
-         WHERE e.is_featured = 1 AND e.featured_scope = ?
-         GROUP BY e.id
-         LIMIT 1`,
-        [college]
-      );
-      if (collegeRows.length) event = collegeRows[0];
-    }
-
-    // ── Priority 3: If still no pin, check for College+Year Pin ───────
-    if (!event) {
-      const scope = `${college}:${year_level}`;
-      const [cyRows] = await pool.execute(
-        `SELECT e.*, COUNT(r.event_id) AS registration_count
-         FROM events e
-         LEFT JOIN registrations r ON r.event_id = e.id
-         WHERE e.is_featured = 1 AND e.featured_scope = ?
-         GROUP BY e.id
-         LIMIT 1`,
-        [scope]
-      );
-      if (cyRows.length) event = cyRows[0];
-    }
-
-    if (!event) return res.json([]);
-
-    // Final visibility check (year level)
-    if (!isVisible(event, college, year_level)) return res.json([]);
 
     const [myRegs] = await pool.execute(
       'SELECT event_id FROM registrations WHERE student_id = ?', [studentId],
     );
     const mine = new Set(myRegs.map(r => r.event_id));
 
-    return res.json([{
-      ...event,
-      target_colleges:    parseJSON(event.target_colleges),
-      target_years:       parseJSON(event.target_years),
-      registered:         mine.has(event.id),
-      registration_count: Number(event.registration_count) || 0,
-    }]);
+    const filtered = rows.filter(e => isVisible(e, college, year_level));
+
+    // Sort by priority hierarchy: All > All:Year > College > College:Year
+    filtered.sort((a, b) => {
+      const getPriority = (scope) => {
+        if (scope === 'All') return 1;
+        if (scope && scope.startsWith('All:')) return 2;
+        if (scope === college) return 3;
+        if (scope === `${college}:${year_level}`) return 4;
+        return 5;
+      };
+      return getPriority(a.featured_scope) - getPriority(b.featured_scope);
+    });
+
+    return res.json(filtered.map(e => ({
+      ...e,
+      target_colleges:    parseJSON(e.target_colleges),
+      target_years:       parseJSON(e.target_years),
+      registered:         mine.has(e.id),
+      registration_count: Number(e.registration_count) || 0,
+    })));
   } catch (err) {
     console.error('[GET /events/featured]', err);
     return res.status(500).json({ error: 'Server error.' });
