@@ -62,10 +62,10 @@ function renderEvents(events) {
             </div>
             <div class="event-actions">
                 ${featured
-                    ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id})">📌 Unpin</button>`
+                    ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">📌 Unpin</button>`
                     : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin as Featured</button>`}
                 <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
-                <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, this)"> Delete</button>
+                <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, '${e.title.replace(/'/g, "\\'")}', this)"> Delete</button>
             </div>
         </div>`;
     }).join('');
@@ -75,27 +75,107 @@ function editEvent(id) {
     window.location.href = `edit_event.html?id=${id}`;
 }
 
-async function unpin(id) {
-    if (!confirm('Remove this event from Featured?')) return;
-    const res = await apiFetch(`/api/admin/events/${id}/unpin`, { method: 'PUT' });
-    if (res.ok) loadEvents(); else alert('Failed to unpin.');
+// ── Custom Confirm Modal ─────────────────────────────────────────────────────
+
+function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmClass = '', onConfirm }) {
+    // Remove any existing modal
+    const existing = document.getElementById('admin-confirm-modal');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'admin-confirm-modal';
+    overlay.className = 'admin-confirm-overlay';
+    overlay.innerHTML = `
+        <div class="admin-confirm-box">
+            <div class="admin-confirm-icon">${confirmClass === 'danger' ? '!!!' : ''}</div>
+            <h3 class="admin-confirm-title">${title}</h3>
+            <p class="admin-confirm-message">${message}</p>
+            <div class="admin-confirm-actions">
+                <button class="admin-confirm-btn cancel" id="admin-confirm-cancel">Cancel</button>
+                <button class="admin-confirm-btn confirm ${confirmClass}" id="admin-confirm-ok">${confirmLabel}</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Animate in
+    requestAnimationFrame(() => overlay.classList.add('visible'));
+
+    function close() {
+        overlay.classList.remove('visible');
+        setTimeout(() => overlay.remove(), 250);
+    }
+
+    document.getElementById('admin-confirm-cancel').addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+    document.getElementById('admin-confirm-ok').addEventListener('click', () => {
+        close();
+        onConfirm();
+    });
 }
+
+// ── Unpin ────────────────────────────────────────────────────────────────────
+
+async function unpin(id, title) {
+    const res = await apiFetch(`/api/admin/events/${id}/unpin`, { method: 'PUT' });
+    const data = await res.json();
+    if (res.ok) {
+        showAdminToast('Event unpinned.', 'info');
+        loadEvents();
+    } else {
+        showAdminToast(data.error || 'Failed to unpin.', 'error');
+    }
+}
+
+// ── Pin ──────────────────────────────────────────────────────────────────────
 
 async function pinEvent(id) {
     const res  = await apiFetch(`/api/admin/events/${id}/pin`, { method: 'PUT' });
     const data = await res.json();
-    if (res.ok) loadEvents(); else alert(data.error || 'Failed to pin.');
+    if (res.ok) {
+        showAdminToast('Event pinned as Featured!', 'success');
+        loadEvents();
+    } else {
+        showAdminToast(data.error || 'Failed to pin.', 'error');
+    }
 }
 
-async function deleteEvent(id, btn) {
-    if (!confirm('Delete this event? This cannot be undone.')) return;
-    const card = btn.closest('.event-card');
-    card.style.opacity    = '0';
-    card.style.transform  = 'translateX(20px)';
-    card.style.transition = 'all 0.3s ease';
-    const res = await apiFetch(`/api/admin/events/${id}`, { method: 'DELETE' });
-    if (res.ok) { setTimeout(() => card.remove(), 300); }
-    else { card.style.opacity = '1'; card.style.transform = ''; alert('Failed to delete.'); }
+// ── Delete (two-step confirm) ─────────────────────────────────────────────────
+
+async function deleteEvent(id, title, btn) {
+    // Step 1: initial confirm
+    showAdminConfirm({
+        title: 'Delete Event?',
+        message: `This will permanently delete <strong>${title}</strong> and all its registrations.`,
+        confirmLabel: 'Continue',
+        confirmClass: 'danger',
+        onConfirm: () => {
+            // Step 2: final confirm with event name
+            showAdminConfirm({
+                title: 'Are you sure?',
+                message: `You are about to permanently delete:<br><span class="confirm-event-name">"${title}"</span><br><br>This cannot be undone.`,
+                confirmLabel: 'Yes, Delete',
+                confirmClass: 'danger',
+                onConfirm: async () => {
+                    const card = btn.closest('.event-card');
+                    card.style.opacity    = '0';
+                    card.style.transform  = 'translateX(20px)';
+                    card.style.transition = 'all 0.3s ease';
+
+                    const res = await apiFetch(`/api/admin/events/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        showAdminToast(`"${title}" deleted.`, 'error');
+                        setTimeout(() => card.remove(), 300);
+                    } else {
+                        card.style.opacity   = '1';
+                        card.style.transform = '';
+                        showAdminToast('Failed to delete.', 'error');
+                    }
+                }
+            });
+        }
+    });
 }
 
 loadEvents();
