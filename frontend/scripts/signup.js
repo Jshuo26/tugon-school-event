@@ -62,13 +62,13 @@ if (signupForm) {
 
     
     if (!payload.email.toLowerCase().endsWith('@plpasig.edu.ph')) {
-        alert('Email must end with @plpasig.edu.ph (e.g. juandelacruz@plpasig.edu.ph).');
+        alert('Email must end with @plpasig.edu.ph');
         submitBtn.textContent = 'Sign Up \u2192';
         submitBtn.disabled    = false;
         return;
     }
     if (!/^[0-9-]+$/.test(payload.student_id)) {
-        alert('Student ID must contain only numbers (e.g. 2024-00001).');
+        alert('Student ID must contain only numbers.');
         submitBtn.textContent = 'Sign Up \u2192';
         submitBtn.disabled    = false;
         return;

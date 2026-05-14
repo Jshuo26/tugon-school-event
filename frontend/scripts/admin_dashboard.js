@@ -76,24 +76,15 @@ function editEvent(id) {
 }
 
 async function unpin(id) {
+    if (!confirm('Remove this event from Featured?')) return;
     const res = await apiFetch(`/api/admin/events/${id}/unpin`, { method: 'PUT' });
-    if (res.ok) {
-        showAdminToast('Event unpinned.');
-        loadEvents(true);
-    } else {
-        showAdminToast('Failed to unpin.', 'error');
-    }
+    if (res.ok) loadEvents(); else alert('Failed to unpin.');
 }
 
 async function pinEvent(id) {
     const res  = await apiFetch(`/api/admin/events/${id}/pin`, { method: 'PUT' });
     const data = await res.json();
-    if (res.ok) {
-        showAdminToast('Event pinned as Featured!');
-        loadEvents(true);
-    } else {
-        showAdminToast(data.error || 'Failed to pin.', 'error');
-    }
+    if (res.ok) loadEvents(); else alert(data.error || 'Failed to pin.');
 }
 
 async function deleteEvent(id, btn) {
@@ -103,15 +94,8 @@ async function deleteEvent(id, btn) {
     card.style.transform  = 'translateX(20px)';
     card.style.transition = 'all 0.3s ease';
     const res = await apiFetch(`/api/admin/events/${id}`, { method: 'DELETE' });
-    if (res.ok) {
-        showAdminToast('Event deleted.');
-        setTimeout(() => card.remove(), 300);
-    }
-    else {
-        card.style.opacity = '1';
-        card.style.transform = '';
-        showAdminToast('Failed to delete.', 'error');
-    }
+    if (res.ok) { setTimeout(() => card.remove(), 300); }
+    else { card.style.opacity = '1'; card.style.transform = ''; alert('Failed to delete.'); }
 }
 
 loadEvents();
