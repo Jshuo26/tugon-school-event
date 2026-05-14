@@ -369,7 +369,7 @@ tr:last-child td { border-bottom: none; }
 .category-badge.academic { background: #dcfce7; color: #166534; }
 .category-badge.cultural { background: #fdf2f8; color: #9d174d; }
 .category-badge.sports   { background: #eff6ff; color: #1e40af; }
-.category-badge.tech     { background: #ede9fe; color: #5b21b6; }
+.category-badge.tech, .category-badge.technology { background: #ede9fe; color: #5b21b6; }
 
 /* ── Register Button ── */
 .btn-register {

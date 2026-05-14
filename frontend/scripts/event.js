@@ -4,6 +4,7 @@ const catColors = {
     Sports:    'cat-sports',
     Social:    'cat-social',
     Tech:      'cat-tech',
+    Technology: 'cat-tech',
     Others:    'cat-others',
 };
 

@@ -51,36 +51,36 @@ router.get('/', authStudent, async (req, res) => {
 router.get('/featured', authStudent, async (req, res) => {
   const { college, year_level, id: studentId } = req.student;
   try {
-    // Retrieve the single pinned event (if any)
-    const [rows] = await pool.execute(
+    // ── Priority 1: Check for Global Pin ('All') ──────────────────────
+    const [globalRows] = await pool.execute(
       `SELECT e.*, COUNT(r.event_id) AS registration_count
        FROM events e
        LEFT JOIN registrations r ON r.event_id = e.id
-       WHERE e.is_featured = 1
+       WHERE e.is_featured = 1 AND e.featured_scope = 'All'
        GROUP BY e.id
        LIMIT 1`,
     );
 
-    if (!rows.length) return res.json([]);
+    let event = globalRows.length ? globalRows[0] : null;
 
-    const event = rows[0];
-    const scope = (event.featured_scope || '').trim();
-
-    // ── Visibility rules ────────────────────────────────────────────────
-    // 'All'  → global pin: every student sees this regardless of college/year
-    // other  → scope is a comma-joined list of colleges; match if student's
-    //           college is in the list AND year-level passes the event setting
-    let visible;
-    if (scope === 'All') {
-      // Global pin — all colleges, all years (that is how it was created)
-      visible = true;
-    } else {
-      // College-specific pin — use the full isVisible check
-      // (target_colleges & target_years drive who can see it)
-      visible = isVisible(event, college, year_level);
+    // ── Priority 2: If no global pin, check for College-Specific Pin ──
+    if (!event) {
+      const [collegeRows] = await pool.execute(
+        `SELECT e.*, COUNT(r.event_id) AS registration_count
+         FROM events e
+         LEFT JOIN registrations r ON r.event_id = e.id
+         WHERE e.is_featured = 1 AND e.featured_scope = ?
+         GROUP BY e.id
+         LIMIT 1`,
+        [college]
+      );
+      if (collegeRows.length) event = collegeRows[0];
     }
 
-    if (!visible) return res.json([]);
+    if (!event) return res.json([]);
+
+    // Final visibility check (year level)
+    if (!isVisible(event, college, year_level)) return res.json([]);
 
     const [myRegs] = await pool.execute(
       'SELECT event_id FROM registrations WHERE student_id = ?', [studentId],

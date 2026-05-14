@@ -2,6 +2,17 @@ const adminToken = localStorage.getItem('tugon_admin_token');
 if (!adminToken) window.location.href = 'login.html';
 
 const grid = document.getElementById('events-grid');
+let currentTab = 'All';
+
+// ── Tab Switching Logic ──────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.college;
+        loadEvents();
+    });
+});
 
 async function apiFetch(url, opts = {}) {
     return fetch(url, {
@@ -39,20 +50,32 @@ function featuredBadgeLabel(targetColleges, targetYears) {
 }
 
 function renderEvents(events) {
-    if (!events.length) {
-        grid.innerHTML = '<p class="text-muted" style="padding:2rem;">No events yet. <a href="add_event.html">Add one →</a></p>';
+    const filtered = events.filter(e => {
+        if (currentTab === 'All') return e.target_colleges.includes('All');
+        return e.target_colleges.includes(currentTab);
+    });
+
+    if (!filtered.length) {
+        grid.innerHTML = `<p class="text-muted" style="padding:2rem;">No events for <strong>${currentTab}</strong> yet. <a href="add_event.html">Add one →</a></p>`;
         return;
     }
-    grid.innerHTML = events.map(e => {
+
+    grid.innerHTML = filtered.map(e => {
         const dateStr    = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '';
-        const featured   = e.is_featured;
+        // Check if pinned FOR THIS SPECIFIC SCOPE (TAB)
+        const isPinnedHere = e.is_featured && e.featured_scope === currentTab;
+        
         const seats      = seatsLabel(e);
         const full       = e.capacity && (e.registration_count || 0) >= e.capacity;
-        const badgeLabel = featured ? featuredBadgeLabel(e.target_colleges, e.target_years) : '';
+        const badgeLabel = e.is_featured ? featuredBadgeLabel(e.target_colleges, e.target_years) : '';
+
         return `
-        <div class="event-card ${featured ? 'featured' : ''}" data-id="${e.id}">
+        <div class="event-card ${isPinnedHere ? 'featured' : ''}" data-id="${e.id}">
             <div class="event-info">
-                <h3>${e.title}${featured ? ` <span class="badge-featured">${badgeLabel}</span>` : ''}</h3>
+                <h3>
+                    ${e.title}
+                    ${e.is_featured ? ` <span class="badge-featured" title="Pinned for: ${e.featured_scope}">${badgeLabel}</span>` : ''}
+                </h3>
                 <div class="event-meta">
                     <span>📅 ${dateStr}</span>
                     ${e.location ? `<span>📍 ${e.location}</span>` : ''}
@@ -61,9 +84,9 @@ function renderEvents(events) {
                 </div>
             </div>
             <div class="event-actions">
-                ${featured
+                ${isPinnedHere
                     ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">📌 Unpin</button>`
-                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin as Featured</button>`}
+                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin for ${currentTab}</button>`}
                 <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
                 <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, '${e.title.replace(/'/g, "\\'")}', this)"> Delete</button>
             </div>
@@ -118,10 +141,10 @@ function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmCla
 // ── Unpin ────────────────────────────────────────────────────────────────────
 
 async function unpin(id, title) {
-    const res = await apiFetch(`/api/admin/events/${id}/unpin`, { method: 'PUT' });
+    const res = await apiFetch(`/api/admin/events/${id}/unpin?scope=${encodeURIComponent(currentTab)}`, { method: 'PUT' });
     const data = await res.json();
     if (res.ok) {
-        showAdminToast('Event unpinned.', 'info');
+        showAdminToast(`Event unpinned from ${currentTab}.`, 'info');
         loadEvents();
     } else {
         showAdminToast(data.error || 'Failed to unpin.', 'error');
@@ -131,10 +154,10 @@ async function unpin(id, title) {
 // ── Pin ──────────────────────────────────────────────────────────────────────
 
 async function pinEvent(id) {
-    const res  = await apiFetch(`/api/admin/events/${id}/pin`, { method: 'PUT' });
+    const res  = await apiFetch(`/api/admin/events/${id}/pin?scope=${encodeURIComponent(currentTab)}`, { method: 'PUT' });
     const data = await res.json();
     if (res.ok) {
-        showAdminToast('Event pinned as Featured!', 'success');
+        showAdminToast(`Pinned as Featured for ${currentTab}!`, 'success');
         loadEvents();
     } else {
         showAdminToast(data.error || 'Failed to pin.', 'error');

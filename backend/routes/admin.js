@@ -221,10 +221,17 @@ router.put('/events/:id', authAdmin, upload.single('event_image'), async (req, r
 
 router.put('/events/:id/pin', authAdmin, async (req, res) => {
   const conn = await pool.getConnection();
+  const { scope } = req.query; // 'All', 'Nursing', etc.
+  
+  if (!scope) {
+    conn.release();
+    return res.status(400).json({ error: 'Scope is required (e.g. All, Nursing).' });
+  }
+
   try {
     await conn.beginTransaction();
 
-    // ── Look up the event's audience settings to determine scope ──────────
+    // ── Check if the event actually targets this scope ──────────
     const [evts] = await conn.execute(
       'SELECT id, target_colleges, target_years FROM events WHERE id = ?',
       [req.params.id],
@@ -234,35 +241,31 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Event not found.' });
     }
 
-    const cols    = parseJSON(evts[0].target_colleges);
-    const years   = parseJSON(evts[0].target_years);
+    const cols = parseJSON(evts[0].target_colleges);
+    const canPin = (scope === 'All' && cols.includes('All')) || cols.includes(scope);
+    
+    if (!canPin) {
+      await conn.rollback();
+      return res.status(400).json({ error: `Event does not target ${scope}.` });
+    }
 
-    // Global pin: event created for ALL colleges AND ALL years
-    const isGlobal = cols.includes('All') && years.includes('All');
-
-    // featured_scope stored in DB:
-    //   'All'                    → global pin (overrides everything, visible to every student)
-    //   'Computer Studies'       → only that college sees the featured event
-    //   'Computer Studies,Nursing' → multiple specific colleges
-    const scope = isGlobal ? 'All' : (cols.length ? cols.join(',') : 'Unknown');
-
-    // ── Step 1: Unpin ALL currently-pinned events (enforce single-pin rule) ─
+    // ── Step 1: Unpin WHATEVER was pinned for this specific scope ─────────
+    // We search for events where featured_scope matches this scope.
+    // If we support multiple scopes per event, we'd need more complex logic.
+    // For now, let's assume featured_scope is a single scope.
     await conn.execute(
-      'UPDATE events SET is_featured = 0, featured_scope = NULL WHERE is_featured = 1',
+      'UPDATE events SET is_featured = 0, featured_scope = NULL WHERE featured_scope = ?',
+      [scope]
     );
 
-    // ── Step 2: Pin the selected event with its determined scope ────────────
+    // ── Step 2: Pin the selected event for this scope ────────────
     await conn.execute(
       'UPDATE events SET is_featured = 1, featured_scope = ? WHERE id = ?',
       [scope, req.params.id],
     );
 
     await conn.commit();
-    return res.json({
-      message: isGlobal
-        ? 'Event pinned as featured for all colleges and all years.'
-        : `Event pinned as featured for: ${scope}.`,
-    });
+    return res.json({ message: `Event pinned as featured for ${scope}.` });
   } catch (err) {
     await conn.rollback();
     console.error('[PUT admin/events/:id/pin]', err);
@@ -273,12 +276,14 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
 });
 
 router.put('/events/:id/unpin', authAdmin, async (req, res) => {
+  const { scope } = req.query;
   try {
     const [r] = await pool.execute(
-      'UPDATE events SET is_featured = 0, featured_scope = NULL WHERE id = ?', [req.params.id],
+      'UPDATE events SET is_featured = 0, featured_scope = NULL WHERE id = ? AND featured_scope = ?',
+      [req.params.id, scope],
     );
-    if (!r.affectedRows) return res.status(404).json({ error: 'Event not found.' });
-    return res.json({ message: 'Event unpinned.' });
+    if (!r.affectedRows) return res.status(404).json({ error: 'Event not found or not pinned for this scope.' });
+    return res.json({ message: `Event unpinned from ${scope}.` });
   } catch (err) {
     console.error('[PUT admin/events/:id/unpin]', err);
     return res.status(500).json({ error: 'Server error.' });
