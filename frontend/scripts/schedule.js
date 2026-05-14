@@ -6,7 +6,7 @@ function fmtDate(d) {
     if (!d) return '';
     return new Date(d).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' });
 }
-function fmtTime(t) { return t ? t.slice(0, 5) : ''; }
+function fmtTime(t) { return formatTime(t); }
 
 function isFull(e) {
     return e.capacity && e.registration_count >= e.capacity;

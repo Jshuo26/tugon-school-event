@@ -39,6 +39,15 @@ const PM_COURSES = {
     'Education':        ['Bachelor in Elementary Education (BEEd)', 'Bachelor in Secondary Education (BSEd)'],
 };
 
+function formatTime(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':');
+    let hour = parseInt(h);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12;
+    return `${hour}:${m} ${ampm}`;
+}
+
 function pmUpdateCourse(college, courseVal) {
     const courseWrap = document.getElementById('pm-course-wrap');
     const majorWrap  = document.getElementById('pm-major-wrap');

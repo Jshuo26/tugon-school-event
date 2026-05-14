@@ -10,7 +10,7 @@ const catColors = {
 
 function buildFeaturedSlide(e) {
     const dateStr = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'long', day:'numeric' }) : '';
-    const timeStr = [e.start_time, e.end_time].filter(Boolean).join(' – ');
+    const timeStr = [formatTime(e.start_time), formatTime(e.end_time)].filter(Boolean).join(' – ');
     const full    = e.capacity && (e.registration_count || 0) >= e.capacity;
     let btnLabel, btnClass = '';
     if (e.registered) {
