@@ -1,8 +1,8 @@
 mysql -u root 
 
 CREATE DATABASE tugon_db
-  DEFAULT CHARACTER SET utf8mb4
-  DEFAULT COLLATE utf8mb4_unicode_ci;
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_unicode_ci;
 
 USE tugon_db;
 
@@ -32,7 +32,7 @@ CREATE TABLE students (
     UNIQUE KEY uq_student_id_num  (student_id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS events (
+CREATE TABLE events (
     id INT(11) NOT NULL AUTO_INCREMENT,
     title VARCHAR(200) NOT NULL,
     description TEXT DEFAULT NULL,
@@ -52,9 +52,9 @@ CREATE TABLE IF NOT EXISTS events (
     INDEX idx_featured_scope (featured_scope)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS registrations (
-    student_id INT(11)   NOT NULL,
-    event_id INT(11)   NOT NULL,
+CREATE TABLE registrations (
+    student_id INT(11) NOT NULL,
+    event_id INT(11) NOT NULL,
     registration_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (student_id, event_id),
     CONSTRAINT fk_reg_student FOREIGN KEY (student_id) REFERENCES students (id) ON DELETE CASCADE,

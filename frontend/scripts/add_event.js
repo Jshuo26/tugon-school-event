@@ -137,7 +137,7 @@
             showInlineError('Select at least one target college (or "All Colleges").'); 
             return false; 
         }
-        if (!years.length)    { 
+        if (!years.length) { 
             showInlineError('Select at least one target year level (or "All Years").'); 
             return false; 
         }

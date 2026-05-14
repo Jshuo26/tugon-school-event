@@ -94,7 +94,7 @@ function renderEvents(events) {
     const activeScope = getActiveScope();
 
     if (!filtered.length) {
-        grid.innerHTML = `<p class="text-muted" style="padding:2rem;">No events for <strong>${activeScope.replace(':', ' - ')}</strong> yet. <a href="add_event.html">Add one →</a></p>`;
+        grid.innerHTML = `<p class="text-muted" style="padding:2rem;">No events for <strong>${activeScope.replace(':', ' - ')}</strong> yet. <a href="add_event.html">Add one</a></p>`;
         return;
     }
 
@@ -187,7 +187,7 @@ async function unpin(id, title) {
 
 async function pinEvent(id) {
     const scope = getActiveScope();
-    const res  = await apiFetch(`/api/admin/events/${id}/pin?scope=${encodeURIComponent(scope)}`, { method: 'PUT' });
+    const res = await apiFetch(`/api/admin/events/${id}/pin?scope=${encodeURIComponent(scope)}`, { method: 'PUT' });
     const data = await res.json();
     if (res.ok) {
         showAdminToast(`Pinned as Featured for ${scope.replace(':', ' - ')}!`, 'success');
@@ -211,7 +211,7 @@ async function deleteEvent(id, title, btn) {
                 confirmClass: 'danger',
                 onConfirm: async () => {
                     const card = btn.closest('.event-card');
-                    card.style.opacity    = '0';
+                    card.style.opacity = '0';
                     card.style.transform  = 'translateX(20px)';
                     card.style.transition = 'all 0.3s ease';
                     const res = await apiFetch(`/api/admin/events/${id}`, { method: 'DELETE' });
@@ -219,7 +219,7 @@ async function deleteEvent(id, title, btn) {
                         showAdminToast(`"${title}" deleted.`, 'error');
                         setTimeout(() => card.remove(), 300);
                     } else {
-                        card.style.opacity   = '1';
+                        card.style.opacity = '1';
                         card.style.transform = '';
                         showAdminToast('Failed to delete.', 'error');
                     }
