@@ -63,6 +63,21 @@ router.get('/featured', authStudent, async (req, res) => {
 
     let event = globalRows.length ? globalRows[0] : null;
 
+    // ── Priority 1.5: Check for Global-Year Pin ('All:Year') ───────────
+    if (!event) {
+      const scope = `All:${year_level}`;
+      const [gyRows] = await pool.execute(
+        `SELECT e.*, COUNT(r.event_id) AS registration_count
+         FROM events e
+         LEFT JOIN registrations r ON r.event_id = e.id
+         WHERE e.is_featured = 1 AND e.featured_scope = ?
+         GROUP BY e.id
+         LIMIT 1`,
+        [scope]
+      );
+      if (gyRows.length) event = gyRows[0];
+    }
+
     // ── Priority 2: If no global pin, check for College-wide Pin ──────
     if (!event) {
       const [collegeRows] = await pool.execute(

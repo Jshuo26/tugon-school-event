@@ -19,8 +19,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
         document.querySelector('.year-btn[data-year="All"]').classList.add('active');
 
-        // Show/hide year filters
-        yearFilters.style.display = (currentTab === 'All') ? 'none' : 'flex';
+        // Show/hide year filters (Always show now as requested)
+        yearFilters.style.display = 'flex';
         
         loadEvents();
     });
@@ -37,7 +37,7 @@ document.querySelectorAll('.year-btn').forEach(btn => {
 });
 
 function getActiveScope() {
-    if (currentTab === 'All') return 'All';
+    if (currentTab === 'All' && currentYear === 'All') return 'All';
     if (currentYear === 'All') return currentTab;
     return `${currentTab}:${currentYear}`;
 }
@@ -89,15 +89,12 @@ function renderEvents(events) {
         
         if (!colMatch) return false;
 
-        // 2. Year Match (Only if not in "All Colleges" tab)
-        if (currentTab !== 'All') {
-            if (currentYear === 'All') {
-                return e.target_years.includes('All');
-            } else {
-                return e.target_years.includes(currentYear);
-            }
+        // 2. Year Match
+        if (currentYear === 'All') {
+            return e.target_years.includes('All');
+        } else {
+            return e.target_years.includes(currentYear);
         }
-        return true;
     });
 
     const activeScope = getActiveScope();
@@ -137,7 +134,7 @@ function renderEvents(events) {
             <div class="event-actions">
                 ${isPinnedHere
                     ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">📌 Unpin</button>`
-                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin for ${activeScope.replace(':', ' - ')}</button>`}
+                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin Event</button>`}
                 <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
                 <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, '${e.title.replace(/'/g, "\\'")}', this)"> Delete</button>
             </div>
