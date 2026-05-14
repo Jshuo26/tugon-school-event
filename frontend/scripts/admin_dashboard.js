@@ -99,12 +99,12 @@ function renderEvents(events) {
     }
 
     grid.innerHTML = filtered.map(e => {
-        const dateStr    = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '';
+        const dateStr = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '';
         const isPinnedHere = e.is_featured && e.featured_scope === activeScope;
-        const seats      = seatsLabel(e);
-        const full       = e.capacity && (e.registration_count || 0) >= e.capacity;
+        const seats = seatsLabel(e);
+        const full = e.capacity && (e.registration_count || 0) >= e.capacity;
         const badgeLabel = e.is_featured ? featuredBadgeLabel(e.target_colleges, e.target_years) : '';
-        const audience   = audienceLabel(e.target_colleges, e.target_years);
+        const audience = audienceLabel(e.target_colleges, e.target_years);
         return `
 
         <div class="event-card ${isPinnedHere ? 'featured' : ''}" data-id="${e.id}">
