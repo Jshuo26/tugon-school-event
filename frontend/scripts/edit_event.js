@@ -209,8 +209,10 @@
         publishBtn.style.pointerEvents = '';
         return;
         }
-        alert('Event updated successfully! Redirecting to dashboard…');
-        window.location.href = 'admin_dashboard.html';
+        showAdminToast('Event updated successfully! Redirecting…');
+        setTimeout(() => {
+            window.location.href = 'admin_dashboard.html';
+        }, 1500);
     } catch {
         showInlineError('Could not reach the server. Is it running?');
         publishBtn.innerHTML = 'Save Changes →';

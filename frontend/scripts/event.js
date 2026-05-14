@@ -13,7 +13,7 @@ function buildFeaturedSlide(e) {
     const full    = e.capacity && (e.registration_count || 0) >= e.capacity;
     let btnLabel, btnClass = '';
     if (e.registered) {
-        btnLabel = 'Registered Click to Unregister';
+        btnLabel = 'Unregister';
     } else if (full) {
         btnLabel  = 'Full';
         btnClass  = 'btn-full-disabled';
@@ -37,9 +37,10 @@ function buildFeaturedSlide(e) {
     </div>`;
 }
 
-async function loadFeatured() {
+async function loadFeatured(silent = false) {
     const container = document.getElementById('featured-container');
     if (!container) return;
+    if (!silent) container.innerHTML = '<p class="loading-text">Loading featured event…</p>';
     try {
         const res    = await apiFetch('/api/events/featured');
         const events = await res.json();
@@ -55,10 +56,10 @@ async function loadFeatured() {
     } catch { container.innerHTML = ''; }
 }
 
-async function loadAllEvents() {
+async function loadAllEvents(silent = false) {
     const grid = document.getElementById('events-grid');
     if (!grid) return;
-    grid.innerHTML = '<p class="events-loading">Loading events…</p>';
+    if (!silent) grid.innerHTML = '<p class="events-loading">Loading events…</p>';
     try {
         const res    = await apiFetch('/api/events');
         const events = await res.json();
@@ -76,7 +77,7 @@ async function loadAllEvents() {
                 <button class="btn btn-secondary btn-sm btn-full-disabled" disabled>Full</button>
                 <a href="schedule.html" class="btn btn-secondary btn-sm btn-details">Details</a>`;
             } else {
-                const btnLabel = e.registered ? 'Registered Click to Unregister' : 'Register';
+                const btnLabel = e.registered ? 'Unregister' : 'Register';
                 actionHtml = `
                 <button class="btn btn-secondary btn-sm register-btn"
                 data-id="${e.id}" data-registered="${e.registered ? '1' : '0'}">
@@ -111,7 +112,6 @@ async function loadAllEvents() {
 
 async function handleRegister(id, btn) {
     if (btn.dataset.registered === '1') {
-        if (!confirm('Unregister from this event?')) return;
         btn.textContent = 'Unregistering…';
         btn.disabled    = true;
         try {
@@ -121,17 +121,18 @@ async function handleRegister(id, btn) {
                 btn.dataset.registered = '0';
                 btn.disabled           = false;
                 btn.classList.remove('btn-full-disabled');
-                loadFeatured();
-                loadAllEvents();
+                showToast('Successfully unregistered from event.', 'unregister');
+                loadFeatured(true);
+                loadAllEvents(true);
             } else {
                 const data = await res.json();
-                alert(data.error || 'Failed to unregister.');
-                btn.textContent = 'Registered Click to Unregister';
+                showToast(data.error || 'Failed to unregister.', 'error');
+                btn.textContent = 'Unregister';
                 btn.disabled    = false;
             }
         } catch {
-            alert('Server unreachable.');
-            btn.textContent = 'Registered Click to Unregister';
+            showToast('Server unreachable.', 'error');
+            btn.textContent = 'Unregister';
             btn.disabled    = false;
         }
         return;
@@ -142,20 +143,21 @@ async function handleRegister(id, btn) {
         const res  = await apiFetch(`/api/events/${id}/register`, { method: 'POST' });
         const data = await res.json();
         if (res.ok) {
-            btn.textContent        = 'Registered Click to Unregister';
+            btn.textContent        = 'Unregister';
             btn.dataset.registered = '1';
             btn.disabled           = false;
+            showToast('Successfully registered for event!');
         } else if (res.status === 409 && data.error && data.error.includes('already registered')) {
-            btn.textContent        = 'Registered Click to Unregister';
+            btn.textContent        = 'Unregister';
             btn.dataset.registered = '1';
             btn.disabled           = false;
         } else {
-            alert(data.error || 'Registration failed.');
+            showToast(data.error || 'Registration failed.', 'error');
             btn.textContent = 'Register Now';
             btn.disabled    = false;
         }
     } catch {
-        alert('Server unreachable.');
+        showToast('Server unreachable.', 'error');
         btn.textContent = 'Register Now';
         btn.disabled    = false;
     }
@@ -163,6 +165,11 @@ async function handleRegister(id, btn) {
 
 loadFeatured();
 loadAllEvents();
+
+setInterval(() => {
+    loadFeatured(true);
+    loadAllEvents(true);
+}, 10000);
 
 document.getElementById('pm-save').addEventListener('click', async () => {
     const errEl = document.getElementById('pm-error');
@@ -191,7 +198,7 @@ document.getElementById('pm-save').addEventListener('click', async () => {
             document.getElementById('dropdown-college').textContent = data.student.college;
             document.getElementById('dropdown-year').textContent   = data.student.year_level;
             document.getElementById('profile-modal-overlay').style.display = 'none';
-            loadFeatured(); loadAllEvents();
+            loadFeatured(true); loadAllEvents(true);
         } else {
             errEl.textContent = data.error || 'Update failed.';
         }

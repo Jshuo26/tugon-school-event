@@ -212,7 +212,7 @@ p  { font-size: 1rem; line-height: 1.7; color: var(--gray-mid); }
 }
 .hero-logo-display { display: flex; justify-content: center; margin-bottom: 2rem; }
 .hero-logo-display img {
-  height: 120px; object-fit: contain;
+  height: 180px; object-fit: contain;
   filter: drop-shadow(0 0 18px rgba(0,122,122,0.45));
 }
 .hero-text h1 { color: var(--white); margin: 0.5rem 0 1rem; }

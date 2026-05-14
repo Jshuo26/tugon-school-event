@@ -99,3 +99,74 @@ document.getElementById('pm-cancel').addEventListener('click', () => {
 document.getElementById('profile-modal-overlay').addEventListener('click', function(e) {
     if (e.target === this) this.style.display = 'none';
 });
+
+// Toast Notification System
+const toastStyles = `
+.toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    background: var(--dark-card, #1a1a1a);
+    color: var(--white, #fff);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md, 12px);
+    border-left: 4px solid var(--teal-main, #007a7a);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-body, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 600;
+    animation: toast-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    min-width: 280px;
+}
+.toast.success { border-left-color: #10b981; }
+.toast.error { border-left-color: #ef4444; }
+.toast.unregister { border-left-color: #f59e0b; }
+
+@keyframes toast-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.toast.fade-out {
+    animation: toast-out 0.4s ease forwards;
+}
+@keyframes toast-out {
+    to { transform: translateX(20px); opacity: 0; }
+}
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.innerText = toastStyles;
+document.head.appendChild(styleSheet);
+
+function showToast(message, type = 'success') {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = '✅';
+    if (type === 'error') icon = '❌';
+    if (type === 'unregister') icon = '⚠️';
+
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}

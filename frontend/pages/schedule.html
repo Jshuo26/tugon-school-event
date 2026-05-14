@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../styles/schedule.css" />
+  <link rel="icon" href="../assets/icons/icon.png" type="image/png" />
 </head>
 <body>
 
@@ -36,7 +37,7 @@
             <span id="dropdown-college" class="dropdown-college"></span>
             <span id="dropdown-year" class="dropdown-year"></span>
           </div>
-          <a href="#" class="dropdown-item" id="edit-profile-link">✏️ Edit Profile</a>
+          <a href="#" class="dropdown-item" id="edit-profile-link">Edit Profile</a>
           <a href="login.html" class="dropdown-item logout-item" id="logout-link">
             <span>Log Out</span>
           </a>
@@ -56,9 +57,9 @@
   <section class="filter-container">
     <button class="filter-btn active" data-category="all">All Events</button>
     <button class="filter-btn" data-category="academic">Academic</button>
-    <button class="filter-btn" data-category="cultural">Cultural/Social</button>
+    <button class="filter-btn" data-category="cultural">Cultural</button>
+    <button class="filter-btn" data-category="social">Social</button>
     <button class="filter-btn" data-category="sports">Sports</button>
-    <button class="filter-btn" data-category="tech">Tech</button>
   </section>
 
   <main class="schedule-container">
@@ -109,7 +110,7 @@
 
   <div id="profile-modal-overlay" class="modal-overlay">
     <div class="modal-box">
-      <h3 class="modal-title">✏️ Edit Profile</h3>
+      <h3 class="modal-title">Edit Profile</h3>
       <div class="modal-grid-2">
         <div>
           <label class="modal-label">First Name *</label>

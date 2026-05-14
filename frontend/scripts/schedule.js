@@ -56,7 +56,7 @@ function renderRows(events) {
                         <div class="full-capacity-msg">This event is already at full capacity.</div>`;
         } else if (e.registered) {
             statusCell = `<span class="status-dot${full ? ' status-dot--full' : ''}"></span> ${full ? 'Full' : 'Open'}`;
-            actionCell = `<button class="btn-register btn-register--registered register-btn" data-id="${e.id}" data-registered="1">Registered — Click to Unregister</button>`;
+            actionCell = `<button class="btn-register btn-register--registered register-btn" data-id="${e.id}" data-registered="1">Unregister</button>`;
         } else {
             statusCell = `<span class="status-dot"></span> Open`;
             actionCell = `<button class="btn-register register-btn" data-id="${e.id}" data-registered="0">Register</button>`;
@@ -77,22 +77,22 @@ function renderRows(events) {
     tbody.querySelectorAll('.register-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
             if (this.dataset.registered === '1') {
-                if (!confirm('Unregister from this event?')) return;
                 this.textContent = '…';
                 this.disabled    = true;
                 try {
                     const res  = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'DELETE' });
                     const data = await res.json();
                     if (res.ok) {
+                        showToast('Successfully unregistered from event.', 'unregister');
                         loadSchedule(true);
                     } else {
-                        alert(data.error || 'Failed to unregister.');
-                        this.textContent = 'Registered — Click to Unregister';
+                        showToast(data.error || 'Failed to unregister.', 'error');
+                        this.textContent = 'Unregister';
                         this.disabled    = false;
                     }
                 } catch {
-                    alert('Server unreachable.');
-                    this.textContent = 'Registered — Click to Unregister';
+                    showToast('Server unreachable.', 'error');
+                    this.textContent = 'Unregister';
                     this.disabled    = false;
                 }
                 return;
@@ -103,10 +103,11 @@ function renderRows(events) {
                 const res  = await apiFetch(`/api/events/${this.dataset.id}/register`, { method: 'POST' });
                 const data = await res.json();
                 if (res.ok) {
-                    this.textContent = 'Registered — Click to Unregister';
+                    this.textContent = 'Unregister';
                     this.dataset.registered = '1';
                     this.classList.add('btn-register--registered');
                     this.classList.remove('register-btn');
+                    showToast('Successfully registered for event!');
                     loadSchedule(true);
                 } else if (res.status === 409 && data.error && data.error.includes('full capacity')) {
                     const td = this.closest('td');
@@ -114,12 +115,12 @@ function renderRows(events) {
                     <div class="full-capacity-msg">This event is already at full capacity.</div>`;
                     loadSchedule(true);
                 } else {
-                    alert(data.error || 'Registration failed.');
+                    showToast(data.error || 'Registration failed.', 'error');
                     this.textContent = 'Register';
                     this.disabled    = false;
                 }
             } catch {
-                alert('Server unreachable.');
+                showToast('Server unreachable.', 'error');
                 this.textContent = 'Register';
                 this.disabled    = false;
             }

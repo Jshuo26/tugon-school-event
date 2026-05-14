@@ -162,8 +162,10 @@
                 return;
             }
 
-            alert('Event published successfully! Redirecting to dashboard…');
-            window.location.href = 'admin_dashboard.html';
+            showAdminToast('Event published successfully! Redirecting…');
+            setTimeout(() => {
+                window.location.href = 'admin_dashboard.html';
+            }, 1500);
         } catch {
             showInlineError('Could not reach the server. Is it running?');
             publishBtn.innerHTML = 'Publish Event →';
