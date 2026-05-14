@@ -3,6 +3,9 @@ if (!adminToken) window.location.href = 'login.html';
 
 const grid = document.getElementById('events-grid');
 let currentTab = 'All';
+let currentYear = 'All';
+
+const yearFilters = document.getElementById('year-filters');
 
 // ── Tab Switching Logic ──────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -10,9 +13,34 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentTab = btn.dataset.college;
+        
+        // Reset year filter when changing colleges
+        currentYear = 'All';
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.year-btn[data-year="All"]').classList.add('active');
+
+        // Show/hide year filters
+        yearFilters.style.display = (currentTab === 'All') ? 'none' : 'flex';
+        
         loadEvents();
     });
 });
+
+// ── Year Switching Logic ─────────────────────────────────────────────────────
+document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentYear = btn.dataset.year;
+        loadEvents();
+    });
+});
+
+function getActiveScope() {
+    if (currentTab === 'All') return 'All';
+    if (currentYear === 'All') return currentTab;
+    return `${currentTab}:${currentYear}`;
+}
 
 async function apiFetch(url, opts = {}) {
     return fetch(url, {
@@ -51,19 +79,35 @@ function featuredBadgeLabel(targetColleges, targetYears) {
 
 function renderEvents(events) {
     const filtered = events.filter(e => {
-        if (currentTab === 'All') return e.target_colleges.includes('All');
-        return e.target_colleges.includes(currentTab);
+        // 1. College Match
+        const colMatch = (currentTab === 'All')
+            ? e.target_colleges.includes('All')
+            : e.target_colleges.includes(currentTab);
+        
+        if (!colMatch) return false;
+
+        // 2. Year Match (Only if not in "All Colleges" tab)
+        if (currentTab !== 'All') {
+            if (currentYear === 'All') {
+                return e.target_years.includes('All');
+            } else {
+                return e.target_years.includes(currentYear);
+            }
+        }
+        return true;
     });
 
+    const activeScope = getActiveScope();
+
     if (!filtered.length) {
-        grid.innerHTML = `<p class="text-muted" style="padding:2rem;">No events for <strong>${currentTab}</strong> yet. <a href="add_event.html">Add one →</a></p>`;
+        grid.innerHTML = `<p class="text-muted" style="padding:2rem;">No events for <strong>${activeScope.replace(':', ' - ')}</strong> yet. <a href="add_event.html">Add one →</a></p>`;
         return;
     }
 
     grid.innerHTML = filtered.map(e => {
         const dateStr    = e.date ? new Date(e.date).toLocaleDateString('en-PH', { year:'numeric', month:'short', day:'numeric' }) : '';
-        // Check if pinned FOR THIS SPECIFIC SCOPE (TAB)
-        const isPinnedHere = e.is_featured && e.featured_scope === currentTab;
+        // Check if pinned FOR THIS SPECIFIC SCOPE
+        const isPinnedHere = e.is_featured && e.featured_scope === activeScope;
         
         const seats      = seatsLabel(e);
         const full       = e.capacity && (e.registration_count || 0) >= e.capacity;
@@ -86,7 +130,7 @@ function renderEvents(events) {
             <div class="event-actions">
                 ${isPinnedHere
                     ? `<button class="btn-dash btn-pin active" onclick="unpin(${e.id}, '${e.title.replace(/'/g, "\\'")}')">📌 Unpin</button>`
-                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin for ${currentTab}</button>`}
+                    : `<button class="btn-dash btn-pin" onclick="pinEvent(${e.id})">📍 Pin for ${activeScope.replace(':', ' - ')}</button>`}
                 <button class="btn-dash btn-edit" onclick="editEvent(${e.id})"> Edit</button>
                 <button class="btn-dash btn-delete" onclick="deleteEvent(${e.id}, '${e.title.replace(/'/g, "\\'")}', this)"> Delete</button>
             </div>
@@ -141,10 +185,11 @@ function showAdminConfirm({ title, message, confirmLabel = 'Confirm', confirmCla
 // ── Unpin ────────────────────────────────────────────────────────────────────
 
 async function unpin(id, title) {
-    const res = await apiFetch(`/api/admin/events/${id}/unpin?scope=${encodeURIComponent(currentTab)}`, { method: 'PUT' });
+    const scope = getActiveScope();
+    const res = await apiFetch(`/api/admin/events/${id}/unpin?scope=${encodeURIComponent(scope)}`, { method: 'PUT' });
     const data = await res.json();
     if (res.ok) {
-        showAdminToast(`Event unpinned from ${currentTab}.`, 'info');
+        showAdminToast(`Event unpinned from ${scope.replace(':', ' - ')}.`, 'info');
         loadEvents();
     } else {
         showAdminToast(data.error || 'Failed to unpin.', 'error');
@@ -154,10 +199,11 @@ async function unpin(id, title) {
 // ── Pin ──────────────────────────────────────────────────────────────────────
 
 async function pinEvent(id) {
-    const res  = await apiFetch(`/api/admin/events/${id}/pin?scope=${encodeURIComponent(currentTab)}`, { method: 'PUT' });
+    const scope = getActiveScope();
+    const res  = await apiFetch(`/api/admin/events/${id}/pin?scope=${encodeURIComponent(scope)}`, { method: 'PUT' });
     const data = await res.json();
     if (res.ok) {
-        showAdminToast(`Pinned as Featured for ${currentTab}!`, 'success');
+        showAdminToast(`Pinned as Featured for ${scope.replace(':', ' - ')}!`, 'success');
         loadEvents();
     } else {
         showAdminToast(data.error || 'Failed to pin.', 'error');

@@ -975,3 +975,40 @@ body {
   }
 }
 
+/* ── Year Filters ── */
+.year-filters {
+  width: 100%;
+  max-width: 850px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2rem;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(0, 122, 122, 0.3);
+}
+
+.year-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--white);
+}
+
+.year-btn.active {
+  background: rgba(0, 122, 122, 0.2);
+  color: var(--teal-light);
+  border-color: var(--teal-light);
+}
+
+

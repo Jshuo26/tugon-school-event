@@ -241,12 +241,23 @@ router.put('/events/:id/pin', authAdmin, async (req, res) => {
       return res.status(404).json({ error: 'Event not found.' });
     }
 
-    const cols = parseJSON(evts[0].target_colleges);
-    const canPin = (scope === 'All' && cols.includes('All')) || cols.includes(scope);
+    const cols  = parseJSON(evts[0].target_colleges);
+    const years = parseJSON(evts[0].target_years);
+    
+    let canPin = false;
+    if (scope === 'All') {
+      canPin = cols.includes('All');
+    } else if (scope.includes(':')) {
+      const [c, y] = scope.split(':');
+      canPin = (cols.includes('All') || cols.includes(c)) && (years.includes('All') || years.includes(y));
+    } else {
+      // College-only scope
+      canPin = cols.includes('All') || cols.includes(scope);
+    }
     
     if (!canPin) {
       await conn.rollback();
-      return res.status(400).json({ error: `Event does not target ${scope}.` });
+      return res.status(400).json({ error: `Event does not target ${scope.replace(':', ' - ')}.` });
     }
 
     // ── Step 1: Unpin WHATEVER was pinned for this specific scope ─────────

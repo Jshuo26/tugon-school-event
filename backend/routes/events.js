@@ -63,7 +63,7 @@ router.get('/featured', authStudent, async (req, res) => {
 
     let event = globalRows.length ? globalRows[0] : null;
 
-    // ── Priority 2: If no global pin, check for College-Specific Pin ──
+    // ── Priority 2: If no global pin, check for College-wide Pin ──────
     if (!event) {
       const [collegeRows] = await pool.execute(
         `SELECT e.*, COUNT(r.event_id) AS registration_count
@@ -75,6 +75,21 @@ router.get('/featured', authStudent, async (req, res) => {
         [college]
       );
       if (collegeRows.length) event = collegeRows[0];
+    }
+
+    // ── Priority 3: If still no pin, check for College+Year Pin ───────
+    if (!event) {
+      const scope = `${college}:${year_level}`;
+      const [cyRows] = await pool.execute(
+        `SELECT e.*, COUNT(r.event_id) AS registration_count
+         FROM events e
+         LEFT JOIN registrations r ON r.event_id = e.id
+         WHERE e.is_featured = 1 AND e.featured_scope = ?
+         GROUP BY e.id
+         LIMIT 1`,
+        [scope]
+      );
+      if (cyRows.length) event = cyRows[0];
     }
 
     if (!event) return res.json([]);

@@ -9,6 +9,15 @@ if (!token || !student) {
     if (colEl) colEl.textContent = student.college || '';
     const yrEl = document.getElementById('dropdown-year');
     if (yrEl) yrEl.textContent = student.year_level || '';
+
+    // ── Check if profile was just updated ──────────────────────────────
+    if (localStorage.getItem('tugon_profile_updated') === 'true') {
+        localStorage.removeItem('tugon_profile_updated');
+        // We'll show the toast after a short delay so the page looks settled
+        setTimeout(() => {
+            showToast('Profile updated successfully!', 'success');
+        }, 300);
+    }
 }
 
 document.getElementById('logout-link').addEventListener('click', (e) => {
@@ -169,4 +178,41 @@ function showToast(message, type = 'success') {
         toast.classList.add('fade-out');
         setTimeout(() => toast.remove(), 400);
     }, 4000);
+}
+
+// ── Profile Save Logic ───────────────────────────────────────────────────────
+const pmSaveBtn = document.getElementById('pm-save');
+if (pmSaveBtn) {
+    pmSaveBtn.addEventListener('click', async () => {
+        const errEl = document.getElementById('pm-error');
+        errEl.textContent = '';
+        const body = {
+            first_name: document.getElementById('pm-first-name').value.trim(),
+            last_name:  document.getElementById('pm-last-name').value.trim(),
+            email:      document.getElementById('pm-email').value.trim(),
+            college:    document.getElementById('pm-college').value,
+            course:     document.getElementById('pm-course').value || null,
+            major:      document.getElementById('pm-major').value || null,
+            year_level: document.getElementById('pm-year-level').value,
+        };
+        if (!body.first_name || !body.last_name || !body.email || !body.college || !body.year_level) {
+            errEl.textContent = 'Please fill all required fields.'; return;
+        }
+        pmSaveBtn.textContent = 'Saving…'; pmSaveBtn.disabled = true;
+        try {
+            const res  = await apiFetch('/api/auth/profile', { method: 'PUT', body: JSON.stringify(body) });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('tugon_token', data.token);
+                localStorage.setItem('tugon_student', JSON.stringify(data.student));
+                localStorage.setItem('tugon_profile_updated', 'true');
+                document.getElementById('profile-modal-overlay').style.display = 'none';
+                // Auto refresh to reflect changes everywhere
+                location.reload();
+            } else {
+                errEl.textContent = data.error || 'Update failed.';
+            }
+        } catch { errEl.textContent = 'Server unreachable.'; }
+        pmSaveBtn.textContent = 'Save Changes'; pmSaveBtn.disabled = false;
+    });
 }
