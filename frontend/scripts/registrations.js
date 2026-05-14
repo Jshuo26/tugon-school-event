@@ -8,6 +8,8 @@ async function apiFetch(url) {
 const selector  = document.getElementById('event-selector');
 const container = document.getElementById('participants-container');
 let allEvents = [];
+let currentTab = 'All';
+let currentYear = 'All';
 
 function audienceLabel(targetColleges, targetYears) {
     const isAllColleges = targetColleges.includes('All');
@@ -17,29 +19,80 @@ function audienceLabel(targetColleges, targetYears) {
     return `${colLabel} • ${yearLabel}`;
 }
 
+// ── Tab Switching Logic ──────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentTab = btn.dataset.college;
+        
+        // Reset year filter when changing colleges
+        currentYear = 'All';
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector('.year-btn[data-year="All"]').classList.add('active');
+
+        renderEventSelector();
+    });
+});
+
+// ── Year Switching Logic ─────────────────────────────────────────────────────
+document.querySelectorAll('.year-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.year-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentYear = btn.dataset.year;
+        renderEventSelector();
+    });
+});
+
 async function loadEvents() {
     try {
         const res    = await apiFetch('/api/admin/events');
         const events = await res.json();
-        if (!res.ok || !events.length) {
-            selector.innerHTML = '<p class="text-muted">No events found.</p>';
+        if (!res.ok) {
+            selector.innerHTML = '<p class="text-error">Failed to load events.</p>';
             return;
         }
         allEvents = events;
-        selector.innerHTML = events.map(e =>
-            `<button class="btn-event-pill" data-id="${e.id}">${e.title}</button>`
-        ).join('');
-
-        selector.querySelectorAll('.btn-event-pill').forEach(btn => {
-            btn.addEventListener('click', () => {
-                selector.querySelectorAll('.btn-event-pill').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                loadParticipants(btn.dataset.id);
-            });
-        });
+        renderEventSelector();
     } catch {
         selector.innerHTML = '<p class="text-error">Server unreachable.</p>';
     }
+}
+
+function renderEventSelector() {
+    const filtered = allEvents.filter(e => {
+        // 1. College Match
+        const colMatch = (currentTab === 'All')
+            ? e.target_colleges.includes('All')
+            : e.target_colleges.includes(currentTab);
+        
+        if (!colMatch) return false;
+
+        // 2. Year Match
+        if (currentYear === 'All') {
+            return e.target_years.includes('All');
+        } else {
+            return e.target_years.includes(currentYear);
+        }
+    });
+
+    if (!filtered.length) {
+        selector.innerHTML = `<p class="text-muted" style="padding:1rem;">No events found for this filter.</p>`;
+        return;
+    }
+
+    selector.innerHTML = filtered.map(e =>
+        `<button class="btn-event-pill" data-id="${e.id}">${e.title}</button>`
+    ).join('');
+
+    selector.querySelectorAll('.btn-event-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+            selector.querySelectorAll('.btn-event-pill').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadParticipants(btn.dataset.id);
+        });
+    });
 }
 
 async function loadParticipants(eventId) {
