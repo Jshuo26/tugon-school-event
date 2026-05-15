@@ -34,7 +34,7 @@ async function apiFetch(url, opts = {}) {
 
 const PM_COURSES = {
     'Computer Studies': ['BS in Computer Science', 'BS in Information Technology'],
-    'Education':        ['Bachelor in Elementary Education (BEEd)', 'Bachelor in Secondary Education (BSEd)'],
+    'Education': ['Bachelor in Elementary Education (BEEd)', 'Bachelor in Secondary Education (BSEd)'],
 };
 
 function formatTime(t) {
@@ -99,8 +99,8 @@ document.getElementById('edit-profile-link').addEventListener('click', async (e)
 
 function openProfileModal(s) {
     document.getElementById('profile-modal-overlay').style.display = 'flex';
-    document.getElementById('pm-college').value     = s.college    || '';
-    document.getElementById('pm-year-level').value  = s.year_level || '';
+    document.getElementById('pm-college').value = s.college    || '';
+    document.getElementById('pm-year-level').value = s.year_level || '';
     document.getElementById('pm-error').textContent = '';
     pmUpdateCourse(s.college || '', s.course || '');
     pmUpdateMajor(s.course || '', s.major || '');
@@ -206,7 +206,7 @@ if (pmSaveBtn) {
             major: document.getElementById('pm-major').value || null,
             year_level: document.getElementById('pm-year-level').value,
         };
-        if (!body.first_name || !body.last_name || !body.email || !body.college || !body.year_level) {
+        if (!body.college || !body.year_level) {
             errEl.textContent = 'Please fill all required fields.'; return;
         }
         pmSaveBtn.textContent = 'Saving…'; pmSaveBtn.disabled = true;
