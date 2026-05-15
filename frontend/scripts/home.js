@@ -1,0 +1,1 @@
+// home.js - Profile logic moved to shared_student.js

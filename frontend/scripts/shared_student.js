@@ -139,19 +139,31 @@ const toastStyles = `
     animation: toast-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     min-width: 280px;
 }
-.toast.success { border-left-color: #10b981; }
-.toast.error { border-left-color: #ef4444; }
-.toast.unregister { border-left-color: #f59e0b; }
+.toast.success { 
+    border-left-color: #10b981; 
+}
+.toast.error { 
+    border-left-color: #ef4444; 
+}
+.toast.unregister { 
+    border-left-color: #f59e0b; 
+}
 
 @keyframes toast-in {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from { 
+    transform: translateX(100%); opacity: 0; 
+    }
+    to { 
+    transform: translateX(0); opacity: 1; 
+    }
 }
 .toast.fade-out {
     animation: toast-out 0.4s ease forwards;
 }
 @keyframes toast-out {
-    to { transform: translateX(20px); opacity: 0; }
+    to { 
+    transform: translateX(20px); opacity: 0; 
+    }
 }
 `;
 

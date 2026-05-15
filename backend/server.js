@@ -1,9 +1,9 @@
 'use strict';
-const path    = require('path');
+const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const express = require('express');
-const cors    = require('cors');
+const cors = require('cors');
 
 const app = express();
 
@@ -16,9 +16,9 @@ app.use(express.static(frontendDir));
 
 app.use(express.static(path.join(__dirname, '..')));
 
-app.use('/api/auth',   require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
-app.use('/api/admin',  require('./routes/admin'));
+app.use('/api/admin', require('./routes/admin'));
 
 app.get('/', (_req, res) => res.redirect('/pages/login.html'));
 

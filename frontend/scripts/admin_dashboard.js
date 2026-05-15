@@ -82,7 +82,8 @@ function renderEvents(events) {
             ? e.target_colleges.includes('All')
             : e.target_colleges.includes(currentTab);
         
-        if (!colMatch) return false;
+        if (!colMatch) 
+            return false;
 
         if (currentYear === 'All') {
             return e.target_years.includes('All');

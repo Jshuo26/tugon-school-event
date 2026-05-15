@@ -95,7 +95,7 @@ async function loadParticipants(eventId) {
 
     container.innerHTML = '<p class="text-loading">Loading…</p>';
     try {
-        const res  = await apiFetch(`/api/admin/registrations/${eventId}`);
+        const res = await apiFetch(`/api/admin/registrations/${eventId}`);
         const list = await res.json();
 
         const audience = audienceLabel(event.target_colleges, event.target_years);

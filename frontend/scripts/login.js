@@ -137,7 +137,7 @@ if (loginForm) {
                     return;
                 }
                 localStorage.setItem('tugon_admin_token', data.token);
-                localStorage.setItem('tugon_admin',       JSON.stringify(data.admin));
+                localStorage.setItem('tugon_admin', JSON.stringify(data.admin));
                 window.location.href = 'admin_dashboard.html';
             } catch {
                 showToast('Could not reach the server.', 'error');

@@ -26,17 +26,31 @@
         animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         transition: all 0.3s ease;
     }
-    .toast.success { border-left-color: #2dd4bf; }
-    .toast.error   { border-left-color: #ff4444; }
-    .toast.info    { border-left-color: #007a7a; }
-    
+    .toast.success { 
+        border-left-color: #2dd4bf; 
+    }
+    .toast.error { 
+        border-left-color: #ff4444; 
+    }
+    .toast.info { 
+        border-left-color: #007a7a; 
+    }
+
     @keyframes toastIn {
-        from { opacity: 0; transform: translateX(50px); }
-        to   { opacity: 1; transform: translateX(0); }
+        from { 
+        opacity: 0; transform: translateX(50px); 
+        }
+        to { 
+        opacity: 1; transform: translateX(0); 
+        }
     }
     @keyframes toastOut {
-        from { opacity: 1; transform: translateX(0); }
-        to   { opacity: 0; transform: translateX(50px); }
+        from { 
+        opacity: 1; transform: translateX(0); 
+        }
+        to { 
+        opacity: 0; transform: translateX(50px); 
+        }
     }
     `;
 

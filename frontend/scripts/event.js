@@ -15,8 +15,8 @@ function buildFeaturedSlide(e) {
     if (e.registered) {
         btnLabel = 'Unregister';
     } else if (full) {
-        btnLabel  = 'Full';
-        btnClass  = 'btn-full-disabled';
+        btnLabel = 'Full';
+        btnClass = 'btn-full-disabled';
     } else {
         btnLabel = 'Register Now';
     }
@@ -90,7 +90,7 @@ async function loadFeatured(silent = false) {
     if (!container) return;
     if (!silent && !featuredEvents.length) container.innerHTML = '<p class="loading-text">Loading featured events…</p>';
     try {
-        const res    = await apiFetch('/api/events/featured');
+        const res = await apiFetch('/api/events/featured');
         const events = await res.json();
         
         if (!res.ok || !events.length) {
